@@ -5,30 +5,37 @@
 }
 
 :root {
-    --potato-brown: #8B7355;
-    --potato-dark: #654321;
-    --potato-light: #D2B48C;
-    --potato-cream: #F5E6D3;
-    --potato-earth: #A0522D;
-    --potato-skin: #BC8F8F;
-    --potato-yellow: #FFD700;
-    --potato-green: #90EE90;
+    --neon-pink: #ff00ff;
+    --neon-blue: #00ffff;
+    --neon-green: #00ff00;
+    --neon-yellow: #ffff00;
+    --neon-orange: #ff5500;
+    --neon-purple: #ff00aa;
+    --dark-bg: #0a0a0a;
+    --darker-bg: #050505;
 }
 
 body {
-    font-family: 'Patrick Hand', cursive;
+    font-family: 'Bangers', cursive;
     background: 
-        /* Multiple potato silhouettes */
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Cpath fill='%238B7355' fill-opacity='0.15' d='M100,100 Q150,50 200,150 Q250,250 200,350 Q150,450 100,450 Q50,450 0,350 Q-50,250 0,150 Q50,50 100,100 Z'/%3E%3Cpath fill='%23A0522D' fill-opacity='0.1' d='M600,200 Q650,150 700,250 Q750,350 700,450 Q650,550 600,550 Q550,550 500,450 Q450,350 500,250 Q550,150 600,200 Z'/%3E%3Cpath fill='%23D2B48C' fill-opacity='0.1' d='M300,300 Q350,250 400,350 Q450,450 400,550 Q350,650 300,650 Q250,650 200,550 Q150,450 200,350 Q250,250 300,300 Z'/%3E%3C/svg%3E"),
-        /* Potato field gradient */
-        linear-gradient(135deg, #8B4513 0%, #A0522D 25%, #D2691E 50%, #CD853F 75%, #F4A460 100%);
-    background-size: 50%, cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    color: #4B3621;
+        /* Crazy potato pattern */
+        radial-gradient(circle at 20% 80%, var(--neon-pink) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, var(--neon-blue) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, var(--neon-green) 0%, transparent 50%),
+        radial-gradient(circle at 60% 60%, var(--neon-yellow) 0%, transparent 50%),
+        linear-gradient(45deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+    background-size: 400% 400%;
+    animation: crazyBackground 10s ease infinite;
+    color: white;
     min-height: 100vh;
-    line-height: 1.6;
+    line-height: 1.4;
+    overflow-x: hidden;
+}
+
+@keyframes crazyBackground {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .container {
@@ -42,25 +49,28 @@ body {
 
 /* Header Styles */
 header {
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
 }
 
 .header-content {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     flex-wrap: wrap;
     gap: 2rem;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 1.5rem;
-    border-radius: 20px;
-    border: 5px dashed var(--potato-brown);
-    box-shadow: 10px 10px 0px rgba(139, 69, 19, 0.3);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2rem;
+    border-radius: 25px;
+    border: 4px solid var(--neon-pink);
+    box-shadow: 
+        0 0 20px var(--neon-pink),
+        inset 0 0 20px rgba(255, 0, 255, 0.2);
+    backdrop-filter: blur(10px);
 }
 
 .title-section {
     flex: 1;
-    min-width: 300px;
+    text-align: center;
 }
 
 .auth-section {
@@ -71,26 +81,43 @@ header {
 }
 
 h1 {
-    font-family: 'Comic Neue', cursive;
-    font-size: 3.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(45deg, #8B4513, #FFD700, #A0522D);
+    font-family: 'Rubik Bubbles', cursive;
+    font-size: 5rem;
+    font-weight: normal;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, var(--neon-yellow), var(--neon-orange), var(--neon-pink), var(--neon-blue));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
-    transform: rotate(-2deg);
+    text-shadow: 
+        0 0 10px var(--neon-yellow),
+        0 0 20px var(--neon-orange),
+        0 0 30px var(--neon-pink);
+    animation: glow 2s ease-in-out infinite alternate;
+    letter-spacing: 3px;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 
+            0 0 10px var(--neon-yellow),
+            0 0 20px var(--neon-orange),
+            0 0 30px var(--neon-pink);
+    }
+    to {
+        text-shadow: 
+            0 0 20px var(--neon-yellow),
+            0 0 30px var(--neon-orange),
+            0 0 40px var(--neon-pink),
+            0 0 50px var(--neon-blue);
+    }
 }
 
 .subtitle {
-    font-style: italic;
-    color: var(--potato-earth);
-    font-size: 1.3rem;
-    transform: rotate(1deg);
-    background: rgba(255, 215, 0, 0.3);
-    padding: 0.5rem 1rem;
-    border-radius: 15px;
-    display: inline-block;
+    font-size: 1.8rem;
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+    font-family: 'Comic Neue', cursive;
+    transform: rotate(-2deg);
 }
 
 /* Auth Button Styles */
@@ -100,91 +127,106 @@ h1 {
 }
 
 .btn.auth-btn {
-    background: linear-gradient(45deg, #FFD700, #FFA500);
-    color: #8B4513;
-    border: 3px solid #8B4513;
-    padding: 12px 24px;
-    font-size: 1.1rem;
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+    color: white;
+    border: 3px solid var(--neon-blue);
+    padding: 15px 25px;
+    font-size: 1.3rem;
     font-weight: bold;
     border-radius: 50px;
-    transform: rotate(1deg);
-    box-shadow: 5px 5px 0px rgba(139, 69, 19, 0.5);
+    box-shadow: 
+        0 0 15px var(--neon-blue),
+        inset 0 0 10px rgba(0, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .btn.logout-btn {
-    background: linear-gradient(45deg, #FF6347, #FF4500);
+    background: linear-gradient(45deg, var(--neon-orange), var(--neon-pink));
     color: white;
-    border: 3px solid #8B0000;
-    padding: 10px 20px;
-    font-size: 1rem;
+    border: 3px solid var(--neon-orange);
+    padding: 12px 20px;
+    font-size: 1.1rem;
     border-radius: 50px;
-    transform: rotate(-1deg);
-    box-shadow: 5px 5px 0px rgba(139, 0, 0, 0.5);
+    box-shadow: 
+        0 0 15px var(--neon-orange),
+        inset 0 0 10px rgba(255, 85, 0, 0.3);
 }
 
 .user-info {
     display: flex;
     align-items: center;
     gap: 1rem;
-    background: rgba(144, 238, 144, 0.8);
-    padding: 12px 20px;
+    background: rgba(0, 255, 0, 0.2);
+    padding: 15px 25px;
     border-radius: 50px;
-    border: 3px dotted var(--potato-green);
-    transform: rotate(-1deg);
+    border: 2px solid var(--neon-green);
+    box-shadow: 0 0 15px var(--neon-green);
 }
 
 .user-email {
-    font-size: 1rem;
-    color: #2E8B57;
+    font-size: 1.1rem;
+    color: var(--neon-green);
     font-weight: bold;
+    text-shadow: 0 0 5px var(--neon-green);
 }
 
 /* Login Modal */
 #login-modal .modal-content {
-    max-width: 450px;
-    background: linear-gradient(135deg, #F5E6D3, #D2B48C);
-    border: 8px double #8B4513;
-    border-radius: 30px;
+    max-width: 500px;
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    border: 4px solid var(--neon-yellow);
+    border-radius: 25px;
+    box-shadow: 
+        0 0 30px var(--neon-yellow),
+        inset 0 0 20px rgba(255, 255, 0, 0.1);
 }
 
 .modal-content h3 {
-    font-family: 'Comic Neue', cursive;
-    font-size: 2rem;
-    color: #8B4513;
-    text-shadow: 2px 2px 0px rgba(255, 215, 0, 0.5);
-    transform: rotate(-1deg);
+    font-family: 'Rubik Bubbles', cursive;
+    font-size: 2.5rem;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 10px var(--neon-yellow);
+    margin-bottom: 1rem;
 }
 
 .modal-subtitle {
     text-align: center;
-    color: #A0522D;
-    margin-bottom: 1.5rem;
-    font-style: italic;
+    color: var(--neon-blue);
+    margin-bottom: 2rem;
+    font-size: 1.3rem;
+    text-shadow: 0 0 5px var(--neon-blue);
+    font-family: 'Comic Neue', cursive;
 }
 
 .login-input {
     width: 100%;
-    padding: 15px;
-    margin-bottom: 1rem;
-    border: 3px solid #8B4513;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.8);
-    color: #8B4513;
-    font-family: 'Patrick Hand', cursive;
-    font-size: 1.1rem;
+    padding: 18px;
+    margin-bottom: 1.5rem;
+    border: 3px solid var(--neon-purple);
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-family: 'Comic Neue', cursive;
+    font-size: 1.2rem;
     transition: all 0.3s ease;
+    box-shadow: 
+        inset 0 0 10px rgba(255, 0, 170, 0.3),
+        0 0 10px var(--neon-purple);
 }
 
 .login-input:focus {
     outline: none;
-    border-color: #FFD700;
-    background: rgba(255, 215, 0, 0.2);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-    transform: scale(1.05);
+    border-color: var(--neon-blue);
+    box-shadow: 
+        inset 0 0 15px rgba(0, 255, 255, 0.3),
+        0 0 20px var(--neon-blue);
+    transform: scale(1.02);
 }
 
 .login-input::placeholder {
-    color: #A0522D;
+    color: #888;
     font-style: italic;
 }
 
@@ -192,41 +234,45 @@ h1 {
     display: flex;
     gap: 1rem;
     justify-content: center;
-    margin: 1.5rem 0;
+    margin: 2rem 0;
 }
 
 .login-message {
-    margin: 1rem 0;
+    margin: 1.5rem 0;
     text-align: center;
-    color: #8B4513;
-    min-height: 25px;
+    color: white;
+    min-height: 30px;
     font-weight: bold;
-    padding: 10px;
+    padding: 15px;
     border-radius: 15px;
-    background: rgba(255, 255, 255, 0.8);
-    border: 2px dashed #A0522D;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    font-size: 1.1rem;
 }
 
 .login-message.success {
-    color: #2E8B57;
-    background: rgba(144, 238, 144, 0.3);
-    border: 2px solid #2E8B57;
+    color: var(--neon-green);
+    background: rgba(0, 255, 0, 0.1);
+    border: 2px solid var(--neon-green);
+    box-shadow: 0 0 15px var(--neon-green);
 }
 
 .login-message.error {
-    color: #FF4500;
-    background: rgba(255, 69, 0, 0.1);
-    border: 2px solid #FF4500;
+    color: var(--neon-orange);
+    background: rgba(255, 85, 0, 0.1);
+    border: 2px solid var(--neon-orange);
+    box-shadow: 0 0 15px var(--neon-orange);
 }
 
 .close-btn {
     width: 100%;
     margin-top: 1rem;
-    background: rgba(205, 133, 63, 0.3);
-    color: #8B4513;
-    border: 3px dashed #A0522D;
+    background: rgba(255, 85, 0, 0.2);
+    color: var(--neon-orange);
+    border: 3px solid var(--neon-orange);
     border-radius: 20px;
     font-style: italic;
+    box-shadow: 0 0 10px var(--neon-orange);
 }
 
 /* Main App */
@@ -237,14 +283,16 @@ main {
 }
 
 .quote-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(0, 0, 0, 0.85);
     border-radius: 30px;
-    padding: 3rem;
-    margin-bottom: 2rem;
-    border: 8px solid #FFD700;
+    padding: 4rem;
+    margin-bottom: 3rem;
+    border: 5px solid var(--neon-green);
     flex-grow: 1;
-    box-shadow: 15px 15px 0px rgba(139, 69, 19, 0.4);
-    max-width: 800px;
+    box-shadow: 
+        0 0 30px var(--neon-green),
+        inset 0 0 30px rgba(0, 255, 0, 0.1);
+    max-width: 900px;
     margin-left: auto;
     margin-right: auto;
     width: 100%;
@@ -254,100 +302,145 @@ main {
 
 .quote-card::before {
     content: "🥔";
-    font-size: 4rem;
+    font-size: 6rem;
     position: absolute;
-    top: -20px;
-    left: -20px;
+    top: -30px;
+    left: -30px;
     opacity: 0.3;
     transform: rotate(-15deg);
+    text-shadow: 0 0 20px var(--neon-yellow);
 }
 
 .quote-card::after {
     content: "🍟";
-    font-size: 4rem;
+    font-size: 6rem;
     position: absolute;
-    bottom: -20px;
-    right: -20px;
+    bottom: -30px;
+    right: -30px;
     opacity: 0.3;
     transform: rotate(15deg);
+    text-shadow: 0 0 20px var(--neon-orange);
 }
 
 .quote-content {
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
     text-align: center;
 }
 
 #quote-text {
-    font-size: 2rem;
-    line-height: 1.6;
+    font-size: 2.5rem;
+    line-height: 1.5;
     margin-bottom: 2rem;
     font-style: italic;
-    color: #8B4513;
-    text-shadow: 2px 2px 0px rgba(255, 215, 0, 0.3);
-    transform: rotate(0.5deg);
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue);
+    font-family: 'Comic Neue', cursive;
+    animation: textGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+    from {
+        text-shadow: 0 0 10px var(--neon-blue);
+    }
+    to {
+        text-shadow: 
+            0 0 20px var(--neon-blue),
+            0 0 30px var(--neon-purple);
+    }
 }
 
 .author {
     text-align: center;
     font-weight: bold;
-    color: #A0522D;
-    font-size: 1.5rem;
+    color: var(--neon-yellow);
+    font-size: 1.8rem;
     margin-bottom: 2rem;
     font-style: italic;
-    background: rgba(255, 215, 0, 0.3);
-    padding: 0.5rem 2rem;
+    background: rgba(255, 255, 0, 0.2);
+    padding: 1rem 3rem;
     border-radius: 50px;
     display: inline-block;
-    transform: rotate(-1deg);
+    border: 2px solid var(--neon-yellow);
+    box-shadow: 0 0 15px var(--neon-yellow);
 }
 
 .quote-stats {
     display: flex;
     justify-content: center;
-    gap: 3rem;
+    gap: 4rem;
     margin-top: 2rem;
 }
 
 .stat {
-    background: linear-gradient(45deg, #FFD700, #FFA500);
-    padding: 1rem 2rem;
+    background: rgba(255, 0, 255, 0.2);
+    padding: 1.2rem 2.5rem;
     border-radius: 50px;
-    border: 3px solid #8B4513;
-    color: #8B4513;
+    border: 3px solid var(--neon-pink);
+    color: white;
     font-weight: bold;
-    font-size: 1.1rem;
-    transform: rotate(1deg);
-    box-shadow: 5px 5px 0px rgba(139, 69, 19, 0.3);
+    font-size: 1.3rem;
+    box-shadow: 0 0 15px var(--neon-pink);
+    text-shadow: 0 0 5px white;
+}
+
+/* Guest Actions */
+.guest-actions {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.btn.guest-btn {
+    background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+    color: white;
+    border: 4px solid var(--neon-purple);
+    padding: 20px 40px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    border-radius: 50px;
+    box-shadow: 
+        0 0 20px var(--neon-purple),
+        inset 0 0 15px rgba(255, 0, 170, 0.3);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
 /* Guest Message */
 .guest-message {
-    background: linear-gradient(135deg, #FFD700, #FFA500);
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
     padding: 2rem;
     border-radius: 20px;
-    border: 4px dotted #8B4513;
+    border: 3px dashed var(--neon-blue);
     text-align: center;
     margin: 2rem 0;
-    transform: rotate(-1deg);
+    box-shadow: 0 0 20px var(--neon-blue);
 }
 
 .guest-message p {
-    font-size: 1.3rem;
-    color: #8B4513;
+    font-size: 1.5rem;
+    color: var(--neon-green);
     margin-bottom: 1rem;
     font-weight: bold;
+    text-shadow: 0 0 5px var(--neon-green);
 }
 
 /* User Actions */
 .user-actions {
-    margin-top: 2rem;
+    margin-top: 3rem;
 }
 
 .feedback-buttons {
     display: flex;
     justify-content: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
+    gap: 3rem;
+    margin-bottom: 3rem;
 }
 
 .actions {
@@ -359,67 +452,87 @@ main {
 }
 
 .btn {
-    padding: 15px 30px;
+    padding: 18px 35px;
     border: none;
     border-radius: 50px;
-    font-family: 'Comic Neue', cursive;
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-family: 'Bangers', cursive;
+    font-size: 1.5rem;
+    font-weight: normal;
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    min-width: 200px;
-    transform: rotate(0deg);
-    box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.2);
+    letter-spacing: 2px;
+    min-width: 250px;
+    box-shadow: 
+        0 0 15px currentColor,
+        inset 0 0 10px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
 }
 
 .btn:hover:not(:disabled) {
-    transform: translateY(-5px) rotate(2deg) scale(1.05);
-    box-shadow: 12px 12px 0px rgba(0, 0, 0, 0.3);
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 
+        0 0 25px currentColor,
+        0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 .btn:active:not(:disabled) {
-    transform: translateY(0) rotate(0deg) scale(1);
+    transform: translateY(0) scale(1);
 }
 
 .btn:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
 }
 
 .btn.primary {
-    background: linear-gradient(45deg, #FFD700, #FF8C00);
-    color: #8B4513;
-    border: 4px solid #8B4513;
+    background: linear-gradient(45deg, var(--neon-yellow), var(--neon-orange));
+    color: black;
+    border: 4px solid var(--neon-yellow);
 }
 
 .btn.secondary {
-    background: linear-gradient(45deg, #90EE90, #32CD32);
-    color: #006400;
-    border: 4px solid #006400;
+    background: linear-gradient(45deg, var(--neon-green), #00cc00);
+    color: black;
+    border: 4px solid var(--neon-green);
 }
 
 .btn.like {
-    background: linear-gradient(45deg, #90EE90, #00FF00);
-    color: #006400;
-    border: 4px solid #006400;
-    font-size: 1.3rem;
+    background: linear-gradient(45deg, var(--neon-green), #00ff88);
+    color: black;
+    border: 4px solid var(--neon-green);
+    font-size: 1.6rem;
 }
 
 .btn.dislike {
-    background: linear-gradient(45deg, #FF6347, #FF0000);
-    color: #8B0000;
-    border: 4px solid #8B0000;
-    font-size: 1.3rem;
+    background: linear-gradient(45deg, var(--neon-orange), #ff3300);
+    color: black;
+    border: 4px solid var(--neon-orange);
+    font-size: 1.6rem;
 }
 
 .btn.notification {
-    background: linear-gradient(45deg, #87CEEB, #1E90FF);
-    color: #000080;
-    border: 4px solid #000080;
-    font-size: 1.1rem;
+    background: linear-gradient(45deg, var(--neon-blue), #0088ff);
+    color: black;
+    border: 4px solid var(--neon-blue);
+    font-size: 1.4rem;
 }
 
 /* Modal Styles */
@@ -430,7 +543,7 @@ main {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(139, 69, 19, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     backdrop-filter: blur(10px);
     z-index: 1000;
 }
@@ -440,165 +553,90 @@ main {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: linear-gradient(135deg, #F5E6D3, #D2B48C);
+    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
     padding: 3rem;
     border-radius: 30px;
     width: 90%;
     max-width: 600px;
-    border: 8px double #8B4513;
-    box-shadow: 20px 20px 0px rgba(0, 0, 0, 0.3);
+    border: 5px solid var(--neon-pink);
+    box-shadow: 
+        0 0 40px var(--neon-pink),
+        inset 0 0 30px rgba(255, 0, 255, 0.1);
 }
 
 .modal-content h3 {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     text-align: center;
-    color: #8B4513;
-    font-family: 'Comic Neue', cursive;
-    font-size: 2rem;
+    color: var(--neon-pink);
+    font-family: 'Rubik Bubbles', cursive;
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px var(--neon-pink);
 }
 
 .modal-content textarea,
 .modal-content input {
     width: 100%;
-    padding: 15px;
-    margin-bottom: 1rem;
-    border: 3px solid #8B4513;
+    padding: 18px;
+    margin-bottom: 1.5rem;
+    border: 3px solid var(--neon-blue);
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.8);
-    color: #8B4513;
-    font-family: 'Patrick Hand', cursive;
-    font-size: 1.2rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-family: 'Comic Neue', cursive;
+    font-size: 1.3rem;
     transition: all 0.3s ease;
+    box-shadow: 
+        inset 0 0 10px rgba(0, 255, 255, 0.2),
+        0 0 15px var(--neon-blue);
 }
 
 .modal-content textarea:focus,
 .modal-content input:focus {
     outline: none;
-    border-color: #FFD700;
-    background: rgba(255, 215, 0, 0.2);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    border-color: var(--neon-green);
+    box-shadow: 
+        inset 0 0 15px rgba(0, 255, 0, 0.2),
+        0 0 20px var(--neon-green);
     transform: scale(1.02);
 }
 
 .modal-content textarea {
-    height: 150px;
+    height: 180px;
     resize: vertical;
 }
 
 .modal-content textarea::placeholder,
 .modal-content input::placeholder {
-    color: #A0522D;
+    color: #888;
     font-style: italic;
 }
 
 .modal-actions {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
     justify-content: center;
-    margin-top: 2rem;
+    margin-top: 2.5rem;
 }
 
 footer {
     text-align: center;
     margin-top: auto;
-    padding: 2rem 0;
+    padding: 3rem 0;
 }
 
 footer p {
-    margin-bottom: 1rem;
-    color: #8B4513;
+    margin-bottom: 2rem;
+    color: var(--neon-yellow);
     font-style: italic;
-    font-size: 1.2rem;
-    background: rgba(255, 215, 0, 0.3);
-    padding: 1rem;
-    border-radius: 20px;
-    border: 3px dotted #8B4513;
+    font-size: 1.5rem;
+    background: rgba(255, 255, 0, 0.2);
+    padding: 1.5rem;
+    border-radius: 25px;
+    border: 3px dotted var(--neon-yellow);
+    box-shadow: 0 0 20px var(--neon-yellow);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
-        padding: 15px;
-    }
-    
-    .header-content {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    
-    .auth-section {
-        align-items: center;
-    }
-    
-    h1 {
-        font-size: 2.5rem;
-    }
-    
-    .quote-card {
-        padding: 2rem;
-    }
-    
-    #quote-text {
-        font-size: 1.5rem;
-    }
-    
-    .actions {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .feedback-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .btn {
-        width: 100%;
-        max-width: 300px;
-        font-size: 1.1rem;
-    }
-    
-    .login-actions {
-        flex-direction: column;
-    }
-    
-    .modal-content {
-        padding: 2rem;
-        width: 95%;
-    }
-    
-    .quote-stats {
-        flex-direction: column;
-        gap: 1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 2rem;
-    }
-    
-    .quote-card {
-        padding: 1.5rem;
-    }
-    
-    #quote-text {
-        font-size: 1.3rem;
-    }
-    
-    .stat {
-        padding: 0.8rem 1.5rem;
-        font-size: 1rem;
-    }
-    
-    .user-info {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .btn {
-        min-width: auto;
-        padding: 12px 20px;
-    }
-}
+        padding: 
