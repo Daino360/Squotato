@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Dose of Reality</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Daily Dose of Reality</h1>
+            <p class="subtitle">Because optimism is overrated</p>
+        </header>
+        
+        <main>
+            <div class="quote-card">
+                <div class="quote-content">
+                    <p id="quote-text">"Click the button for your daily dose of reality..."</p>
+                    <p id="quote-author" class="author"></p>
+                </div>
+                
+                <div class="feedback-buttons">
+                    <button id="like-btn" class="btn like">👍 Like</button>
+                    <button id="dislike-btn" class="btn dislike">👎 Dislike</button>
+                </div>
+                
+                <div class="actions">
+                    <button id="new-quote" class="btn primary">Get New Quote</button>
+                    <button id="add-quote" class="btn secondary">Add Custom Quote</button>
+                </div>
+            </div>
+            
+            <div id="add-quote-modal" class="modal">
+                <div class="modal-content">
+                    <h3>Add Your Own Quote</h3>
+                    <textarea id="new-quote-text" placeholder="Enter your brutally honest quote..."></textarea>
+                    <input type="text" id="new-quote-author" placeholder="Author (optional)">
+                    <div class="modal-actions">
+                        <button id="submit-quote" class="btn primary">Submit</button>
+                        <button id="cancel-quote" class="btn secondary">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Your daily 8:00 AM reality check</p>
+            <button id="enable-notifications" class="btn notification">Enable Daily Notifications</button>
+        </footer>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
+    
+    <script src="firebase.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

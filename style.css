@@ -1,0 +1,236 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: #ecf0f1;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-top: 2rem;
+}
+
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(45deg, #e74c3c, #f39c12);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    font-style: italic;
+    color: #bdc3c7;
+    font-size: 1.1rem;
+}
+
+.quote-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex-grow: 1;
+}
+
+.quote-content {
+    margin-bottom: 2rem;
+}
+
+#quote-text {
+    font-size: 1.4rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    font-style: italic;
+    text-align: center;
+}
+
+.author {
+    text-align: right;
+    font-weight: 600;
+    color: #f39c12;
+    font-size: 1.1rem;
+}
+
+.feedback-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn.primary {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.btn.secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn.like {
+    background: linear-gradient(45deg, #27ae60, #2ecc71);
+    color: white;
+}
+
+.btn.dislike {
+    background: linear-gradient(45deg, #c0392b, #e74c3c);
+    color: white;
+}
+
+.btn.notification {
+    background: linear-gradient(45deg, #9b59b6, #8e44ad);
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #34495e;
+    padding: 2rem;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-content h3 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #f39c12;
+}
+
+.modal-content textarea,
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1rem;
+}
+
+.modal-content textarea {
+    height: 120px;
+    resize: vertical;
+}
+
+.modal-content textarea::placeholder,
+.modal-content input::placeholder {
+    color: #bdc3c7;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+footer {
+    text-align: center;
+    margin-top: auto;
+    padding: 2rem 0;
+}
+
+footer p {
+    margin-bottom: 1rem;
+    color: #bdc3c7;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    h1 {
+        font-size: 2.2rem;
+    }
+    
+    .quote-card {
+        padding: 1.5rem;
+    }
+    
+    #quote-text {
+        font-size: 1.2rem;
+    }
+    
+    .actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
