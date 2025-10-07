@@ -13,6 +13,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const messaging = firebase.messaging();
+const auth = firebase.auth();
 
 // Firebase collections
 const quotesCollection = db.collection('quotes');

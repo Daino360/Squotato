@@ -1,16 +1,46 @@
 class QuoteApp {
     constructor() {
         this.currentQuote = null;
+        this.user = null;
         this.initializeApp();
     }
 
     initializeApp() {
         this.bindEvents();
-        this.loadRandomQuote();
+        this.setupAuthListener();
         this.checkNotificationPermission();
     }
 
+    setupAuthListener() {
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                this.user = user;
+                this.showMainApp();
+                this.loadRandomQuote();
+            } else {
+                this.user = null;
+                this.showLoginSection();
+            }
+        });
+    }
+
+    showMainApp() {
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+    }
+
+    showLoginSection() {
+        document.getElementById('login-section').style.display = 'block';
+        document.getElementById('main-app').style.display = 'none';
+    }
+
     bindEvents() {
+        // Auth events
+        document.getElementById('login-btn').addEventListener('click', () => this.login());
+        document.getElementById('signup-btn').addEventListener('click', () => this.signup());
+        document.getElementById('logout-btn').addEventListener('click', () => this.logout());
+
+        // Quote events
         document.getElementById('new-quote').addEventListener('click', () => this.loadRandomQuote());
         document.getElementById('like-btn').addEventListener('click', () => this.rateQuote('like'));
         document.getElementById('dislike-btn').addEventListener('click', () => this.rateQuote('dislike'));
@@ -20,19 +50,84 @@ class QuoteApp {
         document.getElementById('enable-notifications').addEventListener('click', () => this.requestNotificationPermission());
     }
 
+    async login() {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        const messageEl = document.getElementById('login-message');
+
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            messageEl.textContent = 'Accesso effettuato!';
+            messageEl.style.color = '#2ecc71';
+        } catch (error) {
+            messageEl.textContent = this.getAuthErrorMessage(error);
+            messageEl.style.color = '#e74c3c';
+        }
+    }
+
+    async signup() {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        const messageEl = document.getElementById('login-message');
+
+        try {
+            await auth.createUserWithEmailAndPassword(email, password);
+            messageEl.textContent = 'Registrazione completata!';
+            messageEl.style.color = '#2ecc71';
+        } catch (error) {
+            messageEl.textContent = this.getAuthErrorMessage(error);
+            messageEl.style.color = '#e74c3c';
+        }
+    }
+
+    getAuthErrorMessage(error) {
+        switch (error.code) {
+            case 'auth/invalid-email':
+                return 'Email non valida';
+            case 'auth/user-disabled':
+                return 'Account disabilitato';
+            case 'auth/user-not-found':
+                return 'Utente non trovato';
+            case 'auth/wrong-password':
+                return 'Password errata';
+            case 'auth/email-already-in-use':
+                return 'Email già in uso';
+            case 'auth/weak-password':
+                return 'Password troppo debole';
+            default:
+                return 'Errore: ' + error.message;
+        }
+    }
+
+    async logout() {
+        try {
+            await auth.signOut();
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    }
+
     async loadRandomQuote() {
         try {
-            // Get quotes with weights (more likes = higher chance)
             const snapshot = await quotesCollection.get();
             const quotes = [];
             
             snapshot.forEach(doc => {
                 const data = doc.data();
+                const likes = data.likes || 0;
+                const dislikes = data.dislikes || 0;
+                
+                // Improved probability calculation
+                // Base weight + likes boost - dislikes penalty
+                let weight = 10; // Base weight for all quotes
+                weight += Math.max(0, likes * 2); // Each like adds 2 to weight
+                weight -= Math.max(0, dislikes * 1); // Each dislike subtracts 1
+                weight = Math.max(1, weight); // Minimum weight of 1
+                
                 quotes.push({
                     id: doc.id,
                     ...data,
-                    // Calculate weight based on likes/dislikes
-                    weight: Math.max(1, (data.likes || 0) - (data.dislikes || 0) + 10)
+                    weight: weight
                 });
             });
 
@@ -42,15 +137,24 @@ class QuoteApp {
             }
 
             // Weighted random selection
-            const weightedQuotes = [];
-            quotes.forEach(quote => {
-                for (let i = 0; i < quote.weight; i++) {
-                    weightedQuotes.push(quote);
-                }
-            });
+            const totalWeight = quotes.reduce((sum, quote) => sum + quote.weight, 0);
+            let random = Math.random() * totalWeight;
+            let selectedQuote = null;
 
-            const randomIndex = Math.floor(Math.random() * weightedQuotes.length);
-            this.currentQuote = weightedQuotes[randomIndex];
+            for (const quote of quotes) {
+                random -= quote.weight;
+                if (random <= 0) {
+                    selectedQuote = quote;
+                    break;
+                }
+            }
+
+            // Fallback if no quote selected
+            if (!selectedQuote) {
+                selectedQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            }
+
+            this.currentQuote = selectedQuote;
             this.displayQuote(this.currentQuote);
 
         } catch (error) {
@@ -61,14 +165,16 @@ class QuoteApp {
 
     displayQuote(quote) {
         document.getElementById('quote-text').textContent = `"${quote.text}"`;
-        document.getElementById('quote-author').textContent = `— ${quote.author || 'Unknown'}`;
+        document.getElementById('quote-author').textContent = `— ${quote.author || 'Sconosciuto'}`;
+        document.getElementById('likes-count').textContent = `👍 ${quote.likes || 0}`;
+        document.getElementById('dislikes-count').textContent = `👎 ${quote.dislikes || 0}`;
     }
 
     displayDefaultQuote() {
         const defaultQuotes = [
-            { text: "The only thing standing between you and your goal is the bullshit story you keep telling yourself.", author: "Unknown Realist" },
-            { text: "They say 'follow your dreams.' So I went back to bed.", author: "Sleeping Philosopher" },
-            { text: "The road to success is always under construction. Mostly because you haven't started working on it.", author: "Construction Worker Philosopher" }
+            { text: "L'unica cosa che si frappone tra te e il tuo obiettivo è la stronzata che continui a raccontarti.", author: "Realista Sconosciuto", likes: 0, dislikes: 0 },
+            { text: "Dicono 'segui i tuoi sogni'. Quindi sono tornato a letto.", author: "Filosofo Dormiente", likes: 0, dislikes: 0 },
+            { text: "La strada per il successo è sempre in costruzione. Principalmente perché non hai ancora iniziato a lavorarci.", author: "Filosofo Edile", likes: 0, dislikes: 0 }
         ];
         const randomQuote = defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)];
         this.displayQuote(randomQuote);
@@ -80,23 +186,36 @@ class QuoteApp {
         try {
             const quoteRef = quotesCollection.doc(this.currentQuote.id);
             const field = rating === 'like' ? 'likes' : 'dislikes';
+            const oppositeField = rating === 'like' ? 'dislikes' : 'likes';
             
+            // Update the quote's likes/dislikes
             await quoteRef.update({
                 [field]: firebase.firestore.FieldValue.increment(1)
             });
 
-            // Store feedback for better recommendations
-            await feedbackCollection.add({
-                quoteId: this.currentQuote.id,
-                rating: rating,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            // Store user feedback for personalization
+            if (this.user) {
+                await feedbackCollection.add({
+                    userId: this.user.uid,
+                    quoteId: this.currentQuote.id,
+                    rating: rating,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            // Update current quote data and display
+            this.currentQuote[field] = (this.currentQuote[field] || 0) + 1;
+            this.displayQuote(this.currentQuote);
 
             // Visual feedback
             const button = document.getElementById(`${rating}-btn`);
-            button.textContent = rating === 'like' ? '👍 Liked!' : '👎 Disliked!';
+            const originalText = button.textContent;
+            button.textContent = rating === 'like' ? '👍 Piaciuto!' : '👎 Non Piaciuto!';
+            button.disabled = true;
+            
             setTimeout(() => {
-                button.textContent = rating === 'like' ? '👍 Like' : '👎 Dislike';
+                button.textContent = originalText;
+                button.disabled = false;
             }, 1000);
 
         } catch (error) {
@@ -105,6 +224,10 @@ class QuoteApp {
     }
 
     showAddQuoteModal() {
+        if (!this.user) {
+            alert('Devi accedere per aggiungere citazioni!');
+            return;
+        }
         document.getElementById('add-quote-modal').style.display = 'block';
     }
 
@@ -115,31 +238,37 @@ class QuoteApp {
     }
 
     async submitCustomQuote() {
+        if (!this.user) {
+            alert('Devi accedere per aggiungere citazioni!');
+            return;
+        }
+
         const text = document.getElementById('new-quote-text').value.trim();
         const author = document.getElementById('new-quote-author').value.trim();
 
         if (!text) {
-            alert('Please enter a quote!');
+            alert('Per favore inserisci una citazione!');
             return;
         }
 
         try {
             await quotesCollection.add({
                 text: text,
-                author: author || 'Anonymous',
+                author: author || 'Anonimo',
                 likes: 0,
                 dislikes: 0,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdBy: this.user.uid,
                 custom: true
             });
 
             this.hideAddQuoteModal();
-            alert('Quote added successfully!');
+            alert('Citazione aggiunta con successo!');
             this.loadRandomQuote();
 
         } catch (error) {
             console.error('Error adding quote:', error);
-            alert('Error adding quote. Please try again.');
+            alert('Errore nell\'aggiungere la citazione. Riprova.');
         }
     }
 
@@ -150,9 +279,9 @@ class QuoteApp {
             if (permission === 'granted') {
                 console.log('Notification permission granted.');
                 await this.setupPushNotifications();
-                document.getElementById('enable-notifications').textContent = 'Notifications Enabled ✓';
+                document.getElementById('enable-notifications').textContent = 'Notifiche Attivate ✓';
             } else {
-                alert('Notifications blocked. You can enable them in your browser settings.');
+                alert('Notifiche bloccate. Puoi abilitarle nelle impostazioni del browser.');
             }
         } catch (error) {
             console.error('Error requesting notification permission:', error);
@@ -161,21 +290,17 @@ class QuoteApp {
 
     checkNotificationPermission() {
         if (Notification.permission === 'granted') {
-            document.getElementById('enable-notifications').textContent = 'Notifications Enabled ✓';
+            document.getElementById('enable-notifications').textContent = 'Notifiche Attivate ✓';
             this.setupPushNotifications();
         }
     }
 
     async setupPushNotifications() {
-        // This would require additional Firebase Cloud Messaging setup
-        // For GitHub Pages, we'll use a simpler approach with scheduled notifications
         this.scheduleDailyNotification();
     }
 
     scheduleDailyNotification() {
-        // Schedule a daily notification at 8:00 AM
         if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
-            // Register service worker for background notifications
             navigator.serviceWorker.register('/sw.js')
                 .then(registration => {
                     console.log('Service Worker registered');
@@ -186,63 +311,6 @@ class QuoteApp {
         }
     }
 }
-
-// Service Worker for notifications (sw.js)
-// Note: This file needs to be at the root of your GitHub Pages site
-
-const CACHE_NAME = 'quote-app-v1';
-const urlsToCache = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/script.js',
-    '/firebase.js'
-];
-
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => cache.addAll(urlsToCache))
-    );
-});
-
-self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request)
-            .then((response) => response || fetch(event.request))
-    );
-});
-
-self.addEventListener('push', (event) => {
-    const options = {
-        body: 'Your daily dose of reality is here. Click to read your quote.',
-        icon: '/icon.png',
-        badge: '/badge.png',
-        vibrate: [100, 50, 100],
-        data: {
-            dateOfArrival: Date.now(),
-            primaryKey: '1'
-        },
-        actions: [
-            {
-                action: 'explore',
-                title: 'Read Quote',
-                icon: '/icon.png'
-            }
-        ]
-    };
-
-    event.waitUntil(
-        self.registration.showNotification('Daily Dose of Reality', options)
-    );
-});
-
-self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-    event.waitUntil(
-        clients.openWindow('/')
-    );
-});
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
