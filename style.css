@@ -639,4 +639,99 @@ footer p {
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
-        padding: 
+        padding: 15px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .auth-section {
+        align-items: center;
+    }
+    
+    h1 {
+        font-size: 3.5rem;
+    }
+    
+    .quote-card {
+        padding: 2.5rem;
+    }
+    
+    #quote-text {
+        font-size: 2rem;
+    }
+    
+    .actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .feedback-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 350px;
+        font-size: 1.3rem;
+        padding: 15px 25px;
+    }
+    
+    .login-actions {
+        flex-direction: column;
+    }
+    
+    .modal-content {
+        padding: 2rem;
+        width: 95%;
+    }
+    
+    .quote-stats {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .guest-message p {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2.8rem;
+    }
+    
+    .quote-card {
+        padding: 2rem;
+    }
+    
+    #quote-text {
+        font-size: 1.6rem;
+    }
+    
+    .stat {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn {
+        min-width: auto;
+        padding: 12px 20px;
+        font-size: 1.2rem;
+    }
+    
+    .btn.guest-btn {
+        font-size: 1.4rem;
+        padding: 15px 30px;
+    }
+}

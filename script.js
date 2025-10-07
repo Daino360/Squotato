@@ -29,6 +29,7 @@ class QuoteApp {
         const userInfo = document.getElementById('user-info');
         const userEmail = document.getElementById('user-email');
         const userActions = document.getElementById('user-actions');
+        const guestActions = document.getElementById('guest-actions');
         const guestMessage = document.getElementById('guest-message');
 
         if (this.user) {
@@ -37,12 +38,14 @@ class QuoteApp {
             userInfo.style.display = 'flex';
             userEmail.textContent = this.user.email;
             userActions.style.display = 'block';
+            guestActions.style.display = 'none';
             guestMessage.style.display = 'none';
         } else {
-            // User is logged out - show guest message
+            // User is logged out - show guest actions and message
             authButtons.style.display = 'flex';
             userInfo.style.display = 'none';
             userActions.style.display = 'none';
+            guestActions.style.display = 'block';
             guestMessage.style.display = 'block';
         }
     }
@@ -55,16 +58,9 @@ class QuoteApp {
         document.getElementById('logout-btn').addEventListener('click', () => this.logout());
         document.getElementById('close-login').addEventListener('click', () => this.hideLoginModal());
 
-        // Enter key for login inputs
-        document.getElementById('login-email').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.login();
-        });
-        document.getElementById('login-password').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.login();
-        });
-
         // Quote events
         document.getElementById('new-quote').addEventListener('click', () => this.loadRandomQuote());
+        document.getElementById('guest-new-quote').addEventListener('click', () => this.loadRandomQuote());
         document.getElementById('like-btn').addEventListener('click', () => this.rateQuote('like'));
         document.getElementById('dislike-btn').addEventListener('click', () => this.rateQuote('dislike'));
         document.getElementById('add-quote').addEventListener('click', () => this.showAddQuoteModal());
@@ -111,7 +107,7 @@ class QuoteApp {
         try {
             this.setLoginButtonsState(true);
             await auth.signInWithEmailAndPassword(email, password);
-            this.showLoginMessage('Benvenuto nella Patata! 🥔', 'success');
+            this.showLoginMessage('Benvenuto in Squotato! 🥔', 'success');
             // Modal will close automatically due to auth state change
         } catch (error) {
             console.error('Login error:', error);
@@ -143,7 +139,7 @@ class QuoteApp {
         try {
             this.setLoginButtonsState(true);
             await auth.createUserWithEmailAndPassword(email, password);
-            this.showLoginMessage('Sei ufficialmente una Patata! 🎉🥔', 'success');
+            this.showLoginMessage('Sei ufficialmente uno Squotater! 🎉🥔', 'success');
             // Modal will close automatically due to auth state change
         } catch (error) {
             console.error('Signup error:', error);
@@ -161,11 +157,11 @@ class QuoteApp {
         signupBtn.disabled = disabled;
         
         if (disabled) {
-            loginBtn.textContent = 'Sto diventando una Patata...';
-            signupBtn.textContent = 'Sto creando una Patata...';
+            loginBtn.textContent = 'Sto entrando in Squotato...';
+            signupBtn.textContent = 'Sto diventando Squotater...';
         } else {
-            loginBtn.textContent = 'Entra nella Patata';
-            signupBtn.textContent = 'Diventa una Patata Nuova';
+            loginBtn.textContent = 'Entra in Squotato';
+            signupBtn.textContent = 'Diventa un Squotater';
         }
     }
 
@@ -180,19 +176,19 @@ class QuoteApp {
             case 'auth/invalid-email':
                 return 'Email non valida! Usa un\'email patatosa!';
             case 'auth/user-disabled':
-                return 'Questa Patata è stata disabilitata! 🥔💀';
+                return 'Questo Squotater è stato disabilitato! 🥔💀';
             case 'auth/user-not-found':
-                return 'Patata non trovata! Devi diventare una Patata prima!';
+                return 'Squotater non trovato! Devi diventare uno Squotater prima!';
             case 'auth/wrong-password':
-                return 'Password sbagliata! Le Patate non approvano!';
+                return 'Password sbagliata! Gli Squotater non approvano!';
             case 'auth/email-already-in-use':
-                return 'Questa email è già una Patata!';
+                return 'Questa email è già uno Squotater!';
             case 'auth/weak-password':
-                return 'Password troppo debole! Le Patate vogliono sicurezza!';
+                return 'Password troppo debole! Gli Squotater vogliono sicurezza!';
             case 'auth/operation-not-allowed':
-                return 'Operazione non permessa! Le Patate si ribellano!';
+                return 'Operazione non permessa! Gli Squotater si ribellano!';
             case 'auth/too-many-requests':
-                return 'Troppi tentativi! Le Patate sono stanche! Riprova più tardi.';
+                return 'Troppi tentativi! Gli Squotater sono stanchi! Riprova più tardi.';
             default:
                 return 'Errore patatoso: ' + error.message;
         }
@@ -258,16 +254,16 @@ class QuoteApp {
 
     displayQuote(quote) {
         document.getElementById('quote-text').textContent = `"${quote.text}"`;
-        document.getElementById('quote-author').textContent = `— ${quote.author || 'Patata Sconosciuta'}`;
-        document.getElementById('likes-count').textContent = `👍 ${quote.likes || 0} patate contente`;
-        document.getElementById('dislikes-count').textContent = `👎 ${quote.dislikes || 0} patate tristi`;
+        document.getElementById('quote-author').textContent = `— ${quote.author || 'Squotater Sconosciuto'}`;
+        document.getElementById('likes-count').textContent = `👍 ${quote.likes || 0}`;
+        document.getElementById('dislikes-count').textContent = `👎 ${quote.dislikes || 0}`;
     }
 
     displayDefaultQuote() {
         const defaultQuotes = [
-            { text: "Sono una patata e sono orgogliosa di esserlo!", author: "Patata Felice", likes: 0, dislikes: 0 },
-            { text: "Le patate fritte sono le mie cugine cool", author: "Patata Normale", likes: 0, dislikes: 0 },
-            { text: "Se il mondo fosse fatto di patate, non ci sarebbero guerre... solo purè", author: "Patata Filosofa", likes: 0, dislikes: 0 }
+            { text: "Sono una patata e sono orgogliosa di esserlo!", author: "Squotater Felice", likes: 0, dislikes: 0 },
+            { text: "Le patate fritte sono le mie cugine cool", author: "Squotater Normale", likes: 0, dislikes: 0 },
+            { text: "Se il mondo fosse fatto di patate, non ci sarebbero guerre... solo purè", author: "Squotater Filosofo", likes: 0, dislikes: 0 }
         ];
         const randomQuote = defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)];
         this.displayQuote(randomQuote);
@@ -300,4 +296,93 @@ class QuoteApp {
             // Visual feedback
             const button = document.getElementById(`${rating}-btn`);
             const originalText = button.textContent;
-            button.textContent = rating === 'like' ? '👍 Patata Approvata!' :
+            button.textContent = rating === 'like' ? '👍 Squote Approvata!' : '👎 Squote Rifiutata!';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 1000);
+
+        } catch (error) {
+            console.error('Error rating quote:', error);
+        }
+    }
+
+    showAddQuoteModal() {
+        if (!this.user) {
+            this.showLoginModal();
+            return;
+        }
+        document.getElementById('add-quote-modal').style.display = 'block';
+    }
+
+    hideAddQuoteModal() {
+        document.getElementById('add-quote-modal').style.display = 'none';
+        document.getElementById('new-quote-text').value = '';
+        document.getElementById('new-quote-author').value = '';
+    }
+
+    async submitCustomQuote() {
+        if (!this.user) {
+            this.showLoginModal();
+            return;
+        }
+
+        const text = document.getElementById('new-quote-text').value.trim();
+        const author = document.getElementById('new-quote-author').value.trim();
+
+        if (!text) {
+            alert('Per favore inserisci una Squote!');
+            return;
+        }
+
+        try {
+            await quotesCollection.add({
+                text: text,
+                author: author || 'Squotater Anonimo',
+                likes: 0,
+                dislikes: 0,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdBy: this.user.uid,
+                custom: true
+            });
+
+            this.hideAddQuoteModal();
+            alert('Squote aggiunta con successo!');
+            this.loadRandomQuote();
+
+        } catch (error) {
+            console.error('Error adding quote:', error);
+            alert('Errore nell\'aggiungere la Squote. Riprova.');
+        }
+    }
+
+    async requestNotificationPermission() {
+        try {
+            const permission = await Notification.requestPermission();
+            
+            if (permission === 'granted') {
+                console.log('Notification permission granted.');
+                document.getElementById('enable-notifications').textContent = 'Notifiche Attivate ✓';
+                document.getElementById('enable-notifications').disabled = true;
+            } else {
+                alert('Notifiche bloccate. Puoi abilitarle nelle impostazioni del browser.');
+            }
+        } catch (error) {
+            console.error('Error requesting notification permission:', error);
+        }
+    }
+
+    checkNotificationPermission() {
+        if (Notification.permission === 'granted') {
+            document.getElementById('enable-notifications').textContent = 'Notifiche Attivate ✓';
+            document.getElementById('enable-notifications').disabled = true;
+        }
+    }
+}
+
+// Initialize the app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new QuoteApp();
+});
