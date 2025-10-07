@@ -1,59 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Dose of Reality</title>
+    <title>Squotato</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Daily Dose of Reality</h1>
-            <p class="subtitle">Because optimism is overrated</p>
+            <h1>Squotato</h1>
+            <p class="subtitle">Perché squattare se c'è Squotato?</p>
         </header>
         
-        <main>
+        <!-- Login Section -->
+        <div id="login-section" class="login-section">
+            <div class="login-card">
+                <h3>Accedi per Aggiungere Squotes</h3>
+                <input type="email" id="login-email" placeholder="Email" class="login-input">
+                <input type="password" id="login-password" placeholder="Password" class="login-input">
+                <div class="login-actions">
+                    <button id="login-btn" class="btn primary">Accedi</button>
+                    <button id="signup-btn" class="btn secondary">Registrati</button>
+                </div>
+                <div id="login-message" class="login-message"></div>
+            </div>
+        </div>
+
+        <!-- Main App (hidden until login) -->
+        <main id="main-app" style="display: none;">
             <div class="quote-card">
                 <div class="quote-content">
-                    <p id="quote-text">"Click the button for your daily dose of reality..."</p>
+                    <p id="quote-text">"Squotato e potato non sono correlati"</p>
                     <p id="quote-author" class="author"></p>
+                    <div class="quote-stats">
+                        <span id="likes-count" class="stat">👍 0</span>
+                        <span id="dislikes-count" class="stat">👎 0</span>
+                    </div>
                 </div>
                 
                 <div class="feedback-buttons">
-                    <button id="like-btn" class="btn like">👍 Like</button>
-                    <button id="dislike-btn" class="btn dislike">👎 Dislike</button>
+                    <button id="like-btn" class="btn like">👍 Mi Piace</button>
+                    <button id="dislike-btn" class="btn dislike">👎 Non Mi Piace</button>
                 </div>
                 
                 <div class="actions">
-                    <button id="new-quote" class="btn primary">Get New Quote</button>
-                    <button id="add-quote" class="btn secondary">Add Custom Quote</button>
+                    <button id="new-quote" class="btn primary">Nuova Squote</button>
+                    <button id="add-quote" class="btn secondary">Aggiungi Squote</button>
+                    <button id="logout-btn" class="btn logout">Esci</button>
                 </div>
             </div>
             
+            <!-- Add Quote Modal -->
             <div id="add-quote-modal" class="modal">
                 <div class="modal-content">
-                    <h3>Add Your Own Quote</h3>
-                    <textarea id="new-quote-text" placeholder="Enter your brutally honest quote..."></textarea>
-                    <input type="text" id="new-quote-author" placeholder="Author (optional)">
+                    <h3>Aggiungi la Tua Squote</h3>
+                    <textarea id="new-quote-text" placeholder="Inserisci la tua citazione brutalmente onesta..."></textarea>
+                    <input type="text" id="new-quote-author" placeholder="Autore (opzionale)">
                     <div class="modal-actions">
-                        <button id="submit-quote" class="btn primary">Submit</button>
-                        <button id="cancel-quote" class="btn secondary">Cancel</button>
+                        <button id="submit-quote" class="btn primary">Invia</button>
+                        <button id="cancel-quote" class="btn secondary">Annulla</button>
                     </div>
                 </div>
             </div>
         </main>
         
         <footer>
-            <p>Your daily 8:00 AM reality check</p>
-            <button id="enable-notifications" class="btn notification">Enable Daily Notifications</button>
+            <p>La tua Squote quotidiana alle 8:00</p>
+            <button id="enable-notifications" class="btn notification">Attiva Notifiche Giornaliere</button>
         </footer>
     </div>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
     
     <script src="firebase.js"></script>
