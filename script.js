@@ -13,6 +13,7 @@ class QuoteApp {
 
     setupAuthListener() {
         auth.onAuthStateChanged((user) => {
+            console.log('Auth state changed:', user);
             if (user) {
                 this.user = user;
                 this.showMainApp();
@@ -40,6 +41,14 @@ class QuoteApp {
         document.getElementById('signup-btn').addEventListener('click', () => this.signup());
         document.getElementById('logout-btn').addEventListener('click', () => this.logout());
 
+        // Enter key for login inputs
+        document.getElementById('login-email').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.login();
+        });
+        document.getElementById('login-password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.login();
+        });
+
         // Quote events
         document.getElementById('new-quote').addEventListener('click', () => this.loadRandomQuote());
         document.getElementById('like-btn').addEventListener('click', () => this.rateQuote('like'));
@@ -55,13 +64,24 @@ class QuoteApp {
         const password = document.getElementById('login-password').value;
         const messageEl = document.getElementById('login-message');
 
+        // Clear previous messages
+        messageEl.textContent = '';
+        messageEl.className = 'login-message';
+
+        if (!email || !password) {
+            this.showLoginMessage('Inserisci email e password', 'error');
+            return;
+        }
+
         try {
+            this.setLoginButtonsState(true);
             await auth.signInWithEmailAndPassword(email, password);
-            messageEl.textContent = 'Accesso effettuato!';
-            messageEl.style.color = '#2ecc71';
+            this.showLoginMessage('Accesso effettuato con successo!', 'success');
         } catch (error) {
-            messageEl.textContent = this.getAuthErrorMessage(error);
-            messageEl.style.color = '#e74c3c';
+            console.error('Login error:', error);
+            this.showLoginMessage(this.getAuthErrorMessage(error), 'error');
+        } finally {
+            this.setLoginButtonsState(false);
         }
     }
 
@@ -70,13 +90,61 @@ class QuoteApp {
         const password = document.getElementById('login-password').value;
         const messageEl = document.getElementById('login-message');
 
+        // Clear previous messages
+        messageEl.textContent = '';
+        messageEl.className = 'login-message';
+
+        if (!email || !password) {
+            this.showLoginMessage('Inserisci email e password', 'error');
+            return;
+        }
+
+        if (password.length < 6) {
+            this.showLoginMessage('La password deve essere di almeno 6 caratteri', 'error');
+            return;
+        }
+
         try {
+            this.setLoginButtonsState(true);
             await auth.createUserWithEmailAndPassword(email, password);
-            messageEl.textContent = 'Registrazione completata!';
-            messageEl.style.color = '#2ecc71';
+            this.showLoginMessage('Registrazione completata! Benvenuto!', 'success');
         } catch (error) {
-            messageEl.textContent = this.getAuthErrorMessage(error);
-            messageEl.style.color = '#e74c3c';
+            console.error('Signup error:', error);
+            this.showLoginMessage(this.getAuthErrorMessage(error), 'error');
+        } finally {
+            this.setLoginButtonsState(false);
+        }
+    }
+
+    setLoginButtonsState(disabled) {
+        const loginBtn = document.getElementById('login-btn');
+        const signupBtn = document.getElementById('signup-btn');
+        
+        loginBtn.disabled = disabled;
+        signupBtn.disabled = disabled;
+        
+        if (disabled) {
+            loginBtn.textContent = 'Caricamento...';
+            signupBtn.textContent = 'Caricamento...';
+        } else {
+            loginBtn.textContent = 'Accedi';
+            signupBtn.textContent = 'Registrati';
+        }
+    }
+
+    showLoginMessage(message, type) {
+        const messageEl = document.getElementById('login-message');
+        messageEl.textContent = message;
+        messageEl.className = `login-message ${type}`;
+        
+        // Auto-clear success messages after 3 seconds
+        if (type === 'success') {
+            setTimeout(() => {
+                if (messageEl.textContent === message) {
+                    messageEl.textContent = '';
+                    messageEl.className = 'login-message';
+                }
+            }, 3000);
         }
     }
 
@@ -94,6 +162,10 @@ class QuoteApp {
                 return 'Email già in uso';
             case 'auth/weak-password':
                 return 'Password troppo debole';
+            case 'auth/operation-not-allowed':
+                return 'Operazione non permessa';
+            case 'auth/too-many-requests':
+                return 'Troppi tentativi. Riprova più tardi.';
             default:
                 return 'Errore: ' + error.message;
         }
@@ -102,8 +174,10 @@ class QuoteApp {
     async logout() {
         try {
             await auth.signOut();
+            this.showLoginMessage('Logout effettuato', 'success');
         } catch (error) {
             console.error('Error logging out:', error);
+            this.showLoginMessage('Errore durante il logout', 'error');
         }
     }
 
@@ -118,11 +192,10 @@ class QuoteApp {
                 const dislikes = data.dislikes || 0;
                 
                 // Improved probability calculation
-                // Base weight + likes boost - dislikes penalty
                 let weight = 10; // Base weight for all quotes
-                weight += Math.max(0, likes * 2); // Each like adds 2 to weight
-                weight -= Math.max(0, dislikes * 1); // Each dislike subtracts 1
-                weight = Math.max(1, weight); // Minimum weight of 1
+                weight += Math.max(0, likes * 2);
+                weight -= Math.max(0, dislikes * 1);
+                weight = Math.max(1, weight);
                 
                 quotes.push({
                     id: doc.id,
@@ -149,12 +222,7 @@ class QuoteApp {
                 }
             }
 
-            // Fallback if no quote selected
-            if (!selectedQuote) {
-                selectedQuote = quotes[Math.floor(Math.random() * quotes.length)];
-            }
-
-            this.currentQuote = selectedQuote;
+            this.currentQuote = selectedQuote || quotes[0];
             this.displayQuote(this.currentQuote);
 
         } catch (error) {
@@ -186,14 +254,11 @@ class QuoteApp {
         try {
             const quoteRef = quotesCollection.doc(this.currentQuote.id);
             const field = rating === 'like' ? 'likes' : 'dislikes';
-            const oppositeField = rating === 'like' ? 'dislikes' : 'likes';
             
-            // Update the quote's likes/dislikes
             await quoteRef.update({
                 [field]: firebase.firestore.FieldValue.increment(1)
             });
 
-            // Store user feedback for personalization
             if (this.user) {
                 await feedbackCollection.add({
                     userId: this.user.uid,
@@ -225,7 +290,7 @@ class QuoteApp {
 
     showAddQuoteModal() {
         if (!this.user) {
-            alert('Devi accedere per aggiungere citazioni!');
+            this.showLoginMessage('Devi accedere per aggiungere citazioni!', 'error');
             return;
         }
         document.getElementById('add-quote-modal').style.display = 'block';
@@ -239,7 +304,7 @@ class QuoteApp {
 
     async submitCustomQuote() {
         if (!this.user) {
-            alert('Devi accedere per aggiungere citazioni!');
+            this.showLoginMessage('Devi accedere per aggiungere citazioni!', 'error');
             return;
         }
 
@@ -278,8 +343,8 @@ class QuoteApp {
             
             if (permission === 'granted') {
                 console.log('Notification permission granted.');
-                await this.setupPushNotifications();
                 document.getElementById('enable-notifications').textContent = 'Notifiche Attivate ✓';
+                document.getElementById('enable-notifications').disabled = true;
             } else {
                 alert('Notifiche bloccate. Puoi abilitarle nelle impostazioni del browser.');
             }
@@ -291,23 +356,7 @@ class QuoteApp {
     checkNotificationPermission() {
         if (Notification.permission === 'granted') {
             document.getElementById('enable-notifications').textContent = 'Notifiche Attivate ✓';
-            this.setupPushNotifications();
-        }
-    }
-
-    async setupPushNotifications() {
-        this.scheduleDailyNotification();
-    }
-
-    scheduleDailyNotification() {
-        if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('Service Worker registered');
-                })
-                .catch(error => {
-                    console.log('Service Worker registration failed:', error);
-                });
+            document.getElementById('enable-notifications').disabled = true;
         }
     }
 }
