@@ -9,37 +9,48 @@ class QuoteApp {
         this.bindEvents();
         this.setupAuthListener();
         this.checkNotificationPermission();
+        this.loadRandomQuote(); // Load quote immediately for guests
     }
 
     setupAuthListener() {
         auth.onAuthStateChanged((user) => {
             console.log('Auth state changed:', user);
+            this.user = user;
+            this.updateAuthUI();
+            
             if (user) {
-                this.user = user;
-                this.showMainApp();
-                this.loadRandomQuote();
-            } else {
-                this.user = null;
-                this.showLoginSection();
+                this.hideLoginModal();
             }
         });
     }
 
-    showMainApp() {
-        document.getElementById('login-section').style.display = 'none';
-        document.getElementById('main-app').style.display = 'block';
-    }
+    updateAuthUI() {
+        const authButtons = document.getElementById('auth-buttons');
+        const userInfo = document.getElementById('user-info');
+        const userEmail = document.getElementById('user-email');
+        const addQuoteBtn = document.getElementById('add-quote');
 
-    showLoginSection() {
-        document.getElementById('login-section').style.display = 'block';
-        document.getElementById('main-app').style.display = 'none';
+        if (this.user) {
+            // User is logged in
+            authButtons.style.display = 'none';
+            userInfo.style.display = 'flex';
+            userEmail.textContent = this.user.email;
+            addQuoteBtn.style.display = 'block';
+        } else {
+            // User is logged out
+            authButtons.style.display = 'flex';
+            userInfo.style.display = 'none';
+            addQuoteBtn.style.display = 'none';
+        }
     }
 
     bindEvents() {
         // Auth events
+        document.getElementById('show-login-btn').addEventListener('click', () => this.showLoginModal());
         document.getElementById('login-btn').addEventListener('click', () => this.login());
         document.getElementById('signup-btn').addEventListener('click', () => this.signup());
         document.getElementById('logout-btn').addEventListener('click', () => this.logout());
+        document.getElementById('close-login').addEventListener('click', () => this.hideLoginModal());
 
         // Enter key for login inputs
         document.getElementById('login-email').addEventListener('keypress', (e) => {
@@ -57,6 +68,27 @@ class QuoteApp {
         document.getElementById('submit-quote').addEventListener('click', () => this.submitCustomQuote());
         document.getElementById('cancel-quote').addEventListener('click', () => this.hideAddQuoteModal());
         document.getElementById('enable-notifications').addEventListener('click', () => this.requestNotificationPermission());
+
+        // Close modals when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                this.hideLoginModal();
+                this.hideAddQuoteModal();
+            }
+        });
+    }
+
+    showLoginModal() {
+        document.getElementById('login-modal').style.display = 'block';
+        document.getElementById('login-email').focus();
+    }
+
+    hideLoginModal() {
+        document.getElementById('login-modal').style.display = 'none';
+        document.getElementById('login-email').value = '';
+        document.getElementById('login-password').value = '';
+        document.getElementById('login-message').textContent = '';
+        document.getElementById('login-message').className = 'login-message';
     }
 
     async login() {
@@ -77,6 +109,7 @@ class QuoteApp {
             this.setLoginButtonsState(true);
             await auth.signInWithEmailAndPassword(email, password);
             this.showLoginMessage('Accesso effettuato con successo!', 'success');
+            // Modal will close automatically due to auth state change
         } catch (error) {
             console.error('Login error:', error);
             this.showLoginMessage(this.getAuthErrorMessage(error), 'error');
@@ -108,6 +141,7 @@ class QuoteApp {
             this.setLoginButtonsState(true);
             await auth.createUserWithEmailAndPassword(email, password);
             this.showLoginMessage('Registrazione completata! Benvenuto!', 'success');
+            // Modal will close automatically due to auth state change
         } catch (error) {
             console.error('Signup error:', error);
             this.showLoginMessage(this.getAuthErrorMessage(error), 'error');
@@ -136,16 +170,6 @@ class QuoteApp {
         const messageEl = document.getElementById('login-message');
         messageEl.textContent = message;
         messageEl.className = `login-message ${type}`;
-        
-        // Auto-clear success messages after 3 seconds
-        if (type === 'success') {
-            setTimeout(() => {
-                if (messageEl.textContent === message) {
-                    messageEl.textContent = '';
-                    messageEl.className = 'login-message';
-                }
-            }, 3000);
-        }
     }
 
     getAuthErrorMessage(error) {
@@ -174,10 +198,8 @@ class QuoteApp {
     async logout() {
         try {
             await auth.signOut();
-            this.showLoginMessage('Logout effettuato', 'success');
         } catch (error) {
             console.error('Error logging out:', error);
-            this.showLoginMessage('Errore durante il logout', 'error');
         }
     }
 
@@ -290,7 +312,7 @@ class QuoteApp {
 
     showAddQuoteModal() {
         if (!this.user) {
-            this.showLoginMessage('Devi accedere per aggiungere citazioni!', 'error');
+            this.showLoginModal();
             return;
         }
         document.getElementById('add-quote-modal').style.display = 'block';
@@ -304,7 +326,7 @@ class QuoteApp {
 
     async submitCustomQuote() {
         if (!this.user) {
-            this.showLoginMessage('Devi accedere per aggiungere citazioni!', 'error');
+            this.showLoginModal();
             return;
         }
 

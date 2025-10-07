@@ -3,21 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squotato</title>
+    <title>Dose Giornaliera di Realtà</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
+        <!-- Header with Login -->
         <header>
-            <h1>Squotato</h1>
-            <p class="subtitle">Perché squattare se c'è Squotato?</p>
+            <div class="header-content">
+                <div class="title-section">
+                    <h1>Dose Giornaliera di Realtà</h1>
+                    <p class="subtitle">Perché l'ottimismo è sopravvalutato</p>
+                </div>
+                <div class="auth-section">
+                    <div id="auth-buttons" class="auth-buttons">
+                        <button id="show-login-btn" class="btn auth-btn">Accedi</button>
+                    </div>
+                    <div id="user-info" class="user-info" style="display: none;">
+                        <span id="user-email" class="user-email"></span>
+                        <button id="logout-btn" class="btn logout-btn">Esci</button>
+                    </div>
+                </div>
+            </div>
         </header>
-        
-        <!-- Login Section -->
-        <div id="login-section" class="login-section">
-            <div class="login-card">
-                <h3>Accedi per Aggiungere Squotes</h3>
+
+        <!-- Login Modal -->
+        <div id="login-modal" class="modal">
+            <div class="modal-content">
+                <h3>Accedi per Aggiungere Citazioni</h3>
                 <input type="email" id="login-email" placeholder="Email" class="login-input">
                 <input type="password" id="login-password" placeholder="Password" class="login-input">
                 <div class="login-actions">
@@ -25,14 +39,15 @@
                     <button id="signup-btn" class="btn secondary">Registrati</button>
                 </div>
                 <div id="login-message" class="login-message"></div>
+                <button id="close-login" class="btn close-btn">Chiudi</button>
             </div>
         </div>
 
-        <!-- Main App (hidden until login) -->
-        <main id="main-app" style="display: none;">
+        <!-- Main App Content -->
+        <main>
             <div class="quote-card">
                 <div class="quote-content">
-                    <p id="quote-text">"Squotato e potato non sono correlati"</p>
+                    <p id="quote-text">"Clicca il bottone per la tua dose giornaliera di realtà..."</p>
                     <p id="quote-author" class="author"></p>
                     <div class="quote-stats">
                         <span id="likes-count" class="stat">👍 0</span>
@@ -46,16 +61,15 @@
                 </div>
                 
                 <div class="actions">
-                    <button id="new-quote" class="btn primary">Nuova Squote</button>
-                    <button id="add-quote" class="btn secondary">Aggiungi Squote</button>
-                    <button id="logout-btn" class="btn logout">Esci</button>
+                    <button id="new-quote" class="btn primary">Nuova Citazione</button>
+                    <button id="add-quote" class="btn secondary">Aggiungi Citazione</button>
                 </div>
             </div>
             
             <!-- Add Quote Modal -->
             <div id="add-quote-modal" class="modal">
                 <div class="modal-content">
-                    <h3>Aggiungi la Tua Squote</h3>
+                    <h3>Aggiungi la Tua Citazione</h3>
                     <textarea id="new-quote-text" placeholder="Inserisci la tua citazione brutalmente onesta..."></textarea>
                     <input type="text" id="new-quote-author" placeholder="Autore (opzionale)">
                     <div class="modal-actions">
@@ -67,7 +81,7 @@
         </main>
         
         <footer>
-            <p>La tua Squote quotidiana alle 8:00</p>
+            <p>Il tuo reality check quotidiano alle 8:00</p>
             <button id="enable-notifications" class="btn notification">Attiva Notifiche Giornaliere</button>
         </footer>
     </div>

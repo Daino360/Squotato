@@ -15,14 +15,22 @@
 
 body {
     font-family: 'Source Sans Pro', sans-serif;
-    background: linear-gradient(135deg, var(--potato-dark) 0%, var(--potato-brown) 100%);
+    background: 
+        /* Giant potato silhouette */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Cpath fill='%238B7355' fill-opacity='0.1' d='M400,100 Q500,50 550,150 Q600,250 550,350 Q500,450 400,450 Q300,450 250,350 Q200,250 250,150 Q300,50 400,100 Z'/%3E%3C/svg%3E"),
+        /* Potato texture overlay */
+        linear-gradient(45deg, var(--potato-dark) 0%, var(--potato-brown) 100%);
+    background-size: 80%, cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: var(--potato-cream);
     min-height: 100vh;
     line-height: 1.6;
 }
 
 .container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
     min-height: 100vh;
@@ -30,10 +38,29 @@ body {
     flex-direction: column;
 }
 
+/* Header Styles */
 header {
-    text-align: center;
     margin-bottom: 2rem;
-    padding-top: 1rem;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.title-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+.auth-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1rem;
 }
 
 h1 {
@@ -53,24 +80,47 @@ h1 {
     font-size: 1.1rem;
 }
 
-/* Login Section */
-.login-section {
-    background: rgba(139, 115, 85, 0.5);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 2.5rem;
-    margin: 2rem auto;
-    border: 2px solid var(--potato-light);
-    max-width: 400px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+/* Auth Button Styles */
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
 }
 
-.login-card h3 {
-    text-align: center;
-    margin-bottom: 1.5rem;
+.btn.auth-btn {
+    background: linear-gradient(45deg, var(--potato-earth), var(--potato-dark));
     color: var(--potato-cream);
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
+    border: 2px solid var(--potato-light);
+    padding: 10px 20px;
+    font-size: 0.9rem;
+}
+
+.btn.logout-btn {
+    background: linear-gradient(45deg, #7f8c8d, #95a5a6);
+    color: white;
+    border: 2px solid #7f8c8d;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(139, 115, 85, 0.6);
+    padding: 10px 15px;
+    border-radius: 25px;
+    border: 1px solid var(--potato-light);
+}
+
+.user-email {
+    font-size: 0.9rem;
+    color: var(--potato-cream);
+    font-weight: 600;
+}
+
+/* Login Modal */
+#login-modal .modal-content {
+    max-width: 400px;
 }
 
 .login-input {
@@ -101,11 +151,11 @@ h1 {
     display: flex;
     gap: 1rem;
     justify-content: center;
-    margin-top: 1.5rem;
+    margin: 1.5rem 0;
 }
 
 .login-message {
-    margin-top: 1rem;
+    margin: 1rem 0;
     text-align: center;
     color: var(--potato-light);
     min-height: 25px;
@@ -127,8 +177,16 @@ h1 {
     border: 1px solid rgba(231, 76, 60, 0.3);
 }
 
+.close-btn {
+    width: 100%;
+    margin-top: 1rem;
+    background: rgba(210, 180, 140, 0.3);
+    color: var(--potato-cream);
+    border: 2px solid var(--potato-light);
+}
+
 /* Main App */
-#main-app {
+main {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -137,12 +195,16 @@ h1 {
 .quote-card {
     background: rgba(139, 115, 85, 0.4);
     backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 2.5rem;
+    border-radius: 20px;
+    padding: 3rem;
     margin-bottom: 2rem;
     border: 2px solid var(--potato-light);
     flex-grow: 1;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
 }
 
 .quote-content {
@@ -150,7 +212,7 @@ h1 {
 }
 
 #quote-text {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     line-height: 1.8;
     margin-bottom: 1.5rem;
     font-style: italic;
@@ -163,7 +225,7 @@ h1 {
     text-align: right;
     font-weight: 600;
     color: var(--potato-light);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     margin-bottom: 1rem;
     font-style: italic;
 }
@@ -244,12 +306,6 @@ h1 {
     border: 2px solid var(--potato-skin);
 }
 
-.btn.logout {
-    background: linear-gradient(45deg, #7f8c8d, #95a5a6);
-    color: white;
-    border: 2px solid #7f8c8d;
-}
-
 .btn:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -285,7 +341,7 @@ h1 {
     transform: translate(-50%, -50%);
     background: var(--potato-brown);
     padding: 2.5rem;
-    border-radius: 15px;
+    border-radius: 20px;
     width: 90%;
     max-width: 500px;
     border: 2px solid var(--potato-light);
@@ -357,13 +413,18 @@ footer p {
         padding: 15px;
     }
     
-    h1 {
-        font-size: 2rem;
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
     
-    .login-section {
-        padding: 2rem;
-        margin: 1rem auto;
+    .auth-section {
+        align-items: center;
+    }
+    
+    h1 {
+        font-size: 2rem;
     }
     
     .quote-card {
@@ -371,7 +432,7 @@ footer p {
     }
     
     #quote-text {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
     
     .actions {
@@ -404,10 +465,6 @@ footer p {
         font-size: 1.8rem;
     }
     
-    .login-section {
-        padding: 1.5rem;
-    }
-    
     .quote-card {
         padding: 1.5rem;
     }
@@ -419,5 +476,10 @@ footer p {
     .stat {
         padding: 0.5rem 1rem;
         font-size: 0.8rem;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 }
