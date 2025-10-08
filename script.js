@@ -627,3 +627,48 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🥔 DOM loaded, starting Squotato...');
     new QuoteApp();
 });
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js')
+      .then(function(registration) {
+        console.log('ServiceWorker registration successful');
+      })
+      .catch(function(error) {
+        console.log('ServiceWorker registration failed: ', error);
+      });
+  });
+}
+
+// Add install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  // Show install button (optional)
+  const installBtn = document.createElement('button');
+  installBtn.textContent = 'Installa App';
+  installBtn.className = 'btn install-btn';
+  installBtn.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: var(--green);
+    color: white;
+  `;
+  
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      installBtn.remove();
+    }
+    deferredPrompt = null;
+  });
+  
+  document.body.appendChild(installBtn);
+});
