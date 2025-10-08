@@ -1,11 +1,12 @@
-const CACHE_NAME = 'squotato-v1.0.0';
+const CACHE_NAME = 'squotato-v1.0.1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  '/firebase.js',
-  '/manifest.json'
+  '/Squotato/',
+  '/Squotato/index.html',
+  '/Squotato/style.css',
+  '/Squotato/script.js',
+  '/Squotato/firebase.js',
+  '/Squotato/manifest.json',
+  '/Squotato/sw.js'
 ];
 
 self.addEventListener('install', function(event) {

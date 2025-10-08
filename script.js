@@ -628,12 +628,12 @@ document.addEventListener('DOMContentLoaded', () => {
     new QuoteApp();
 });
 
-// Register Service Worker
+// Register Service Worker - FIXED PATH
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('/Squotato/sw.js')
       .then(function(registration) {
-        console.log('ServiceWorker registration successful');
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
       })
       .catch(function(error) {
         console.log('ServiceWorker registration failed: ', error);
