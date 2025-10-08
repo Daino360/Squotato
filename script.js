@@ -181,9 +181,11 @@ class QuoteApp {
         
         const userRating = this.userRatings.get(this.currentQuote.id);
         
+        // Remove active classes first
         likeBtn.classList.remove('active');
         dislikeBtn.classList.remove('active');
         
+        // Add active class to the button that matches the user's rating
         if (userRating === 'like') {
             likeBtn.classList.add('active');
             console.log('✅ Like button active');
@@ -443,13 +445,15 @@ class QuoteApp {
     displayQuote(quote) {
         const quoteText = document.getElementById('quote-text');
         const quoteAuthor = document.getElementById('quote-author');
-        const likesCount = document.getElementById('likes-count');
-        const dislikesCount = document.getElementById('dislikes-count');
+        const likesNumber = document.getElementById('likes-number');
+        const dislikesNumber = document.getElementById('dislikes-number');
 
         if (quoteText) quoteText.textContent = `"${quote.text}"`;
         if (quoteAuthor) quoteAuthor.textContent = `— ${quote.author || 'Squotater Sconosciuto'}`;
-        if (likesCount) likesCount.textContent = `👍 ${quote.likes || 0}`;
-        if (dislikesCount) dislikesCount.textContent = `👎 ${quote.dislikes || 0}`;
+        
+        // Update the numbers in the stats section
+        if (likesNumber) likesNumber.textContent = quote.likes || 0;
+        if (dislikesNumber) dislikesNumber.textContent = quote.dislikes || 0;
     }
 
     displayDefaultQuote() {
@@ -490,13 +494,36 @@ class QuoteApp {
                 this.userRatings.set(quoteId, rating);
             }
             
-            // Update UI immediately
-            this.updateVoteButtons();
+            // Reload the quote to get updated counts
+            await this.reloadCurrentQuote();
+            
             console.log('✅ Vote updated successfully');
             
         } catch (error) {
             console.error('❌ Error toggling vote:', error);
             this.showError('Errore nel votare: ' + error.message);
+        }
+    }
+
+    async reloadCurrentQuote() {
+        if (!this.currentQuote) return;
+        
+        try {
+            const quoteDoc = await quotesCollection.doc(this.currentQuote.id).get();
+            if (quoteDoc.exists) {
+                const data = quoteDoc.data();
+                this.currentQuote.likes = data.likes || 0;
+                this.currentQuote.dislikes = data.dislikes || 0;
+                
+                // Ensure minimum values of 0
+                this.currentQuote.likes = Math.max(0, this.currentQuote.likes);
+                this.currentQuote.dislikes = Math.max(0, this.currentQuote.dislikes);
+                
+                this.displayQuote(this.currentQuote);
+                this.updateVoteButtons();
+            }
+        } catch (error) {
+            console.error('❌ Error reloading quote:', error);
         }
     }
 

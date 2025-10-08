@@ -13,7 +13,9 @@
     --white: #FFFFFF;
     --black: #212121;
     --green: #388E3C;
+    --dark-green: #2E7D32;
     --red: #D32F2F;
+    --dark-red: #C62828;
     --blue: #1976D2;
 }
 
@@ -243,6 +245,8 @@ main {
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn:hover:not(:disabled) {
@@ -287,6 +291,7 @@ main {
     min-width: 200px;
     font-size: 1.2rem;
     padding: 15px 30px;
+    position: relative;
 }
 
 .like-btn {
@@ -322,18 +327,36 @@ main {
     padding: 15px 30px;
 }
 
-/* Active States */
+/* Active States for Vote Buttons */
 .vote-btn.active {
     transform: scale(1.05);
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
 .like-btn.active {
-    background: #2E7D32;
+    background: var(--dark-green);
 }
 
 .dislike-btn.active {
-    background: #C62828;
+    background: var(--dark-red);
+}
+
+/* Button Text States */
+.btn-text, .btn-active-text {
+    display: block;
+    transition: opacity 0.3s ease;
+}
+
+.btn-active-text {
+    display: none;
+}
+
+.vote-btn.active .btn-text {
+    display: none;
+}
+
+.vote-btn.active .btn-active-text {
+    display: block;
 }
 
 /* Footer */

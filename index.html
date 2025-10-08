@@ -15,7 +15,7 @@
                 <div class="header-content">
                     <div class="title-section">
                         <h1>SQUOTATO</h1>
-                        <p class="subtitle">Le citazioni più patatose dell'universo</p>
+                        <p class="subtitle">Squotato o potato? Questo è il dilemma</p>
                     </div>
                     <div class="auth-section">
                         <div id="auth-buttons" class="auth-buttons">
@@ -44,8 +44,8 @@
                     <div class="quote-info">
                         <p id="quote-author" class="author">— Patata Saggia</p>
                         <div class="stats">
-                            <span id="likes-count" class="stat">👍 0</span>
-                            <span id="dislikes-count" class="stat">👎 0</span>
+                            <span id="likes-count" class="stat">👍 <span id="likes-number">0</span></span>
+                            <span id="dislikes-count" class="stat">👎 <span id="dislikes-number">0</span></span>
                         </div>
                     </div>
 
@@ -60,8 +60,14 @@
                     <div id="user-layout" class="layout-section" style="display: none;">
                         <div class="vote-section">
                             <div class="vote-buttons">
-                                <button id="like-btn" class="btn vote-btn like-btn">👍 MI PIACE</button>
-                                <button id="dislike-btn" class="btn vote-btn dislike-btn">👎 NON MI PIACE</button>
+                                <button id="like-btn" class="btn vote-btn like-btn">
+                                    <span class="btn-text">👍 MI PIACE</span>
+                                    <span class="btn-active-text" style="display: none;">👍 HAI MESSO MI PIACE</span>
+                                </button>
+                                <button id="dislike-btn" class="btn vote-btn dislike-btn">
+                                    <span class="btn-text">👎 NON MI PIACE</span>
+                                    <span class="btn-active-text" style="display: none;">👎 NON TI PIACE</span>
+                                </button>
                             </div>
                         </div>
                         
