@@ -34,7 +34,7 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 20px;
     min-height: 100vh;
@@ -78,7 +78,7 @@ header {
 }
 
 h1 {
-    font-size: 3rem;
+    font-size: 4rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
     background: linear-gradient(45deg, var(--orange), var(--red), var(--purple));
@@ -86,10 +86,11 @@ h1 {
     -webkit-text-fill-color: transparent;
     text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
     transform: rotate(-1deg);
+    letter-spacing: 2px;
 }
 
 .subtitle {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     color: var(--brown);
     font-weight: bold;
     transform: rotate(0.5deg);
@@ -111,20 +112,16 @@ h1 {
 .user-info {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 1rem;
     background: var(--green);
-    padding: 0.8rem 1.2rem;
-    border-radius: 20px;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
     border: 3px solid var(--black);
     box-shadow: 3px 3px 0px var(--black);
 }
 
-.user-badge {
-    font-size: 1.2rem;
-}
-
-.user-email {
-    font-size: 0.9rem;
+.user-username {
+    font-size: 1.1rem;
     color: var(--black);
     font-weight: bold;
 }
@@ -159,49 +156,50 @@ main {
 /* Quote Display */
 .quote-display {
     display: flex;
-    align-items: flex-start;
-    gap: 2rem;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 2rem;
     position: relative;
 }
 
 .speech-bubble {
-    flex: 1;
     background: var(--yellow);
-    padding: 2rem;
+    padding: 2.5rem;
     border-radius: 25px;
     border: 3px solid var(--black);
     box-shadow: 5px 5px 0px var(--black);
     position: relative;
+    max-width: 800px;
+    text-align: center;
 }
 
 .speech-bubble::before {
     content: "";
     position: absolute;
     bottom: -20px;
-    left: 50px;
+    left: 50%;
+    transform: translateX(-50%);
     border: 10px solid transparent;
     border-top-color: var(--yellow);
-    border-right-color: var(--yellow);
 }
 
-#quote-text {
-    font-size: 1.8rem;
-    line-height: 1.4;
-    color: var(--black);
-    font-weight: bold;
-    text-align: center;
-    margin: 0;
-}
-
-.potato-character {
+.quote-image {
     font-size: 4rem;
+    margin-bottom: 1rem;
     animation: bounce 2s infinite;
 }
 
 @keyframes bounce {
     0%, 100% { transform: translateY(0) rotate(0deg); }
     50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+#quote-text {
+    font-size: 2rem;
+    line-height: 1.4;
+    color: var(--black);
+    font-weight: bold;
+    margin: 0;
 }
 
 /* Quote Info */
@@ -211,7 +209,7 @@ main {
 }
 
 .author {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     color: var(--brown);
     font-weight: bold;
     font-style: italic;
@@ -239,6 +237,24 @@ main {
     margin-top: 2rem;
 }
 
+/* User Welcome */
+.user-welcome {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.welcome-message {
+    font-size: 1.5rem;
+    color: var(--purple);
+    font-weight: bold;
+    background: var(--yellow);
+    padding: 1rem 2rem;
+    border-radius: 20px;
+    border: 3px solid var(--black);
+    box-shadow: 4px 4px 0px var(--black);
+    display: inline-block;
+}
+
 .guest-message {
     background: var(--blue);
     color: var(--white);
@@ -257,7 +273,7 @@ main {
 }
 
 .section-title {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: var(--brown);
     text-align: center;
     margin-bottom: 1.5rem;
@@ -379,6 +395,8 @@ main {
 .notification-btn {
     background: var(--purple);
     color: var(--white);
+    font-size: 1.1rem;
+    padding: 15px 25px;
 }
 
 /* Active States */
@@ -548,7 +566,7 @@ footer {
     padding: 15px;
 }
 
-.login-message {
+.auth-message {
     margin: 1rem 0;
     padding: 1rem;
     border-radius: 15px;
@@ -557,14 +575,28 @@ footer {
     text-align: center;
 }
 
-.login-message.success {
+.auth-message.success {
     background: var(--green);
     color: var(--white);
 }
 
-.login-message.error {
+.auth-message.error {
     background: var(--red);
     color: var(--white);
+}
+
+.author-info {
+    background: var(--yellow);
+    padding: 1rem;
+    border-radius: 15px;
+    border: 2px solid var(--black);
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.author-info p {
+    margin: 0;
+    color: var(--brown);
 }
 
 /* Responsive Design */
@@ -580,26 +612,15 @@ footer {
     }
     
     h1 {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
     }
     
     .main-card {
         padding: 2rem;
     }
     
-    .quote-display {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 1rem;
-    }
-    
-    .speech-bubble::before {
-        display: none;
-    }
-    
     #quote-text {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
     }
     
     .vote-buttons, .action-buttons {
@@ -616,11 +637,16 @@ footer {
         padding: 1.5rem;
         width: 95%;
     }
+    
+    .user-info {
+        flex-direction: column;
+        text-align: center;
+    }
 }
 
 @media (max-width: 480px) {
     h1 {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
     
     .main-card {
@@ -628,10 +654,10 @@ footer {
     }
     
     #quote-text {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
     
-    .potato-character {
+    .quote-image {
         font-size: 3rem;
     }
     
