@@ -19,13 +19,14 @@ try {
   console.error('❌ Firebase initialization failed:', error);
 }
 
-// Initialize Firebase services
+// Update your collections to handle the new structure
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Firebase collections
+// Main collections
 const quotesCollection = db.collection('quotes');
 const feedbackCollection = db.collection('feedback');
+const usersCollection = db.collection('users');
 
 console.log('📚 Firestore collections initialized');
 

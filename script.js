@@ -157,7 +157,7 @@ class QuoteApp {
             if (userUsername) userUsername.textContent = this.userData.username;
             guestLayout.style.display = 'none';
             userLayout.style.display = 'block';
-            this.updateVoteButtons();
+            this.updatePotatoButton();
             console.log('✅ UI updated: User layout');
         } else {
             authButtons.style.display = 'flex';
@@ -168,30 +168,30 @@ class QuoteApp {
         }
     }
 
-    updateVoteButtons() {
+    updatePotatoButton() {
         if (!this.currentQuote || !this.user) return;
         
-        const likeBtn = document.getElementById('like-btn');
-        const dislikeBtn = document.getElementById('dislike-btn');
+        const potatoBtn = document.getElementById('potato-btn');
         
-        if (!likeBtn || !dislikeBtn) {
-            console.error('❌ Vote buttons not found');
+        if (!potatoBtn) {
+            console.error('❌ Potato button not found');
             return;
         }
         
-        const userRating = this.userRatings.get(this.currentQuote.id);
+        const userHasPotato = this.userRatings.get(this.currentQuote.id) === 'potato';
         
-        // Remove active classes first
-        likeBtn.classList.remove('active');
-        dislikeBtn.classList.remove('active');
+        // Update button text and state
+        const btnText = potatoBtn.querySelector('.btn-text');
+        const btnActiveText = potatoBtn.querySelector('.btn-active-text');
         
-        // Add active class to the button that matches the user's rating
-        if (userRating === 'like') {
-            likeBtn.classList.add('active');
-            console.log('✅ Like button active');
-        } else if (userRating === 'dislike') {
-            dislikeBtn.classList.add('active');
-            console.log('✅ Dislike button active');
+        if (userHasPotato) {
+            potatoBtn.classList.add('active');
+            if (btnText) btnText.style.display = 'none';
+            if (btnActiveText) btnActiveText.style.display = 'block';
+        } else {
+            potatoBtn.classList.remove('active');
+            if (btnText) btnText.style.display = 'block';
+            if (btnActiveText) btnActiveText.style.display = 'none';
         }
     }
 
@@ -209,13 +209,9 @@ class QuoteApp {
             // Quote events
             document.getElementById('new-quote').addEventListener('click', () => this.loadRandomQuote());
             document.getElementById('guest-new-quote').addEventListener('click', () => this.loadRandomQuote());
-            document.getElementById('like-btn').addEventListener('click', (e) => {
+            document.getElementById('potato-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.toggleVote('like');
-            });
-            document.getElementById('dislike-btn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.toggleVote('dislike');
+                this.togglePotato();
             });
             document.getElementById('add-quote').addEventListener('click', () => this.showAddQuoteModal());
             document.getElementById('submit-quote').addEventListener('click', () => this.submitCustomQuote());
@@ -394,20 +390,17 @@ class QuoteApp {
             
             snapshot.forEach(doc => {
                 const data = doc.data();
-                const likes = data.likes || 0;
-                const dislikes = data.dislikes || 0;
+                const potatoes = data.potatoes || 0;
                 
                 let weight = 10;
-                weight += Math.max(0, likes * 2);
-                weight -= Math.max(0, dislikes * 1);
+                weight += Math.max(0, potatoes * 2);
                 weight = Math.max(1, weight);
                 
                 quotes.push({
                     id: doc.id,
                     text: data.text,
                     author: data.author,
-                    likes: likes,
-                    dislikes: dislikes,
+                    potatoes: potatoes,
                     weight: weight
                 });
             });
@@ -433,7 +426,7 @@ class QuoteApp {
 
             this.currentQuote = selectedQuote || quotes[0];
             this.displayQuote(this.currentQuote);
-            this.updateVoteButtons();
+            this.updatePotatoButton();
 
         } catch (error) {
             console.error('❌ Error loading quotes:', error);
@@ -445,28 +438,26 @@ class QuoteApp {
     displayQuote(quote) {
         const quoteText = document.getElementById('quote-text');
         const quoteAuthor = document.getElementById('quote-author');
-        const likesNumber = document.getElementById('likes-number');
-        const dislikesNumber = document.getElementById('dislikes-number');
+        const potatoesNumber = document.getElementById('potatoes-number');
 
         if (quoteText) quoteText.textContent = `"${quote.text}"`;
         if (quoteAuthor) quoteAuthor.textContent = `— ${quote.author || 'Squotater Sconosciuto'}`;
         
-        // Update the numbers in the stats section
-        if (likesNumber) likesNumber.textContent = quote.likes || 0;
-        if (dislikesNumber) dislikesNumber.textContent = quote.dislikes || 0;
+        // Update the potatoes count
+        if (potatoesNumber) potatoesNumber.textContent = quote.potatoes || 0;
     }
 
     displayDefaultQuote() {
         const defaultQuotes = [
-            { text: "Benvenuto in Squotato! Aggiungi la tua prima Squote!", author: "Squotater Sistema", likes: 0, dislikes: 0 },
-            { text: "Le patate del database si stanno ancora sbucciando...", author: "Patata Tecnica", likes: 0, dislikes: 0 },
-            { text: "Ops! Nessuna Squote trovata. Crea la prima!", author: "Squotater Affamato", likes: 0, dislikes: 0 }
+            { text: "Benvenuto in Squotato! Aggiungi la tua prima Squote!", author: "Squotater Sistema", potatoes: 0 },
+            { text: "Le patate del database si stanno ancora sbucciando...", author: "Patata Tecnica", potatoes: 0 },
+            { text: "Ops! Nessuna Squote trovata. Crea la prima!", author: "Squotater Affamato", potatoes: 0 }
         ];
         const randomQuote = defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)];
         this.displayQuote(randomQuote);
     }
 
-    async toggleVote(rating) {
+    async togglePotato() {
         if (!this.currentQuote) {
             this.showError('Nessuna Squote selezionata');
             return;
@@ -478,92 +469,70 @@ class QuoteApp {
         }
 
         const quoteId = this.currentQuote.id;
-        const currentRating = this.userRatings.get(quoteId);
+        const userHasPotato = this.userRatings.get(quoteId) === 'potato';
         
         try {
-            if (currentRating === rating) {
-                // Remove vote
-                await this.removeVote(quoteId, rating);
+            if (userHasPotato) {
+                // Remove potato
+                await this.removePotato(quoteId);
                 this.userRatings.delete(quoteId);
+                // Update UI instantly
+                this.currentQuote.potatoes = Math.max(0, (this.currentQuote.potatoes || 0) - 1);
             } else {
-                // Add or change vote
-                if (currentRating) {
-                    await this.removeVote(quoteId, currentRating);
-                }
-                await this.addVote(quoteId, rating);
-                this.userRatings.set(quoteId, rating);
+                // Add potato
+                await this.addPotato(quoteId);
+                this.userRatings.set(quoteId, 'potato');
+                // Update UI instantly
+                this.currentQuote.potatoes = (this.currentQuote.potatoes || 0) + 1;
             }
             
-            // Reload the quote to get updated counts
-            await this.reloadCurrentQuote();
+            // Update display instantly
+            this.displayQuote(this.currentQuote);
+            this.updatePotatoButton();
             
-            console.log('✅ Vote updated successfully');
+            console.log('✅ Potato updated successfully');
             
         } catch (error) {
-            console.error('❌ Error toggling vote:', error);
-            this.showError('Errore nel votare: ' + error.message);
+            console.error('❌ Error toggling potato:', error);
+            this.showError('Errore nel dare la patata: ' + error.message);
         }
     }
 
-    async reloadCurrentQuote() {
-        if (!this.currentQuote) return;
-        
-        try {
-            const quoteDoc = await quotesCollection.doc(this.currentQuote.id).get();
-            if (quoteDoc.exists) {
-                const data = quoteDoc.data();
-                this.currentQuote.likes = data.likes || 0;
-                this.currentQuote.dislikes = data.dislikes || 0;
-                
-                // Ensure minimum values of 0
-                this.currentQuote.likes = Math.max(0, this.currentQuote.likes);
-                this.currentQuote.dislikes = Math.max(0, this.currentQuote.dislikes);
-                
-                this.displayQuote(this.currentQuote);
-                this.updateVoteButtons();
-            }
-        } catch (error) {
-            console.error('❌ Error reloading quote:', error);
-        }
-    }
-
-    async addVote(quoteId, rating) {
+    async addPotato(quoteId) {
         try {
             const quoteRef = quotesCollection.doc(quoteId);
-            const field = rating === 'like' ? 'likes' : 'dislikes';
             
             await quoteRef.update({
-                [field]: firebase.firestore.FieldValue.increment(1)
+                potatoes: firebase.firestore.FieldValue.increment(1)
             });
 
             await feedbackCollection.add({
                 userId: this.user.uid,
                 quoteId: quoteId,
-                rating: rating,
+                rating: 'potato',
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            console.log(`✅ Added ${rating} to quote ${quoteId}`);
+            console.log(`✅ Added potato to quote ${quoteId}`);
 
         } catch (error) {
-            console.error('❌ Error adding vote:', error);
+            console.error('❌ Error adding potato:', error);
             throw error;
         }
     }
 
-    async removeVote(quoteId, rating) {
+    async removePotato(quoteId) {
         try {
             const quoteRef = quotesCollection.doc(quoteId);
-            const field = rating === 'like' ? 'likes' : 'dislikes';
             
             await quoteRef.update({
-                [field]: firebase.firestore.FieldValue.increment(-1)
+                potatoes: firebase.firestore.FieldValue.increment(-1)
             });
 
             const ratingSnapshot = await feedbackCollection
                 .where('userId', '==', this.user.uid)
                 .where('quoteId', '==', quoteId)
-                .where('rating', '==', rating)
+                .where('rating', '==', 'potato')
                 .get();
 
             const deletePromises = [];
@@ -573,10 +542,10 @@ class QuoteApp {
             
             await Promise.all(deletePromises);
 
-            console.log(`✅ Removed ${rating} from quote ${quoteId}`);
+            console.log(`✅ Removed potato from quote ${quoteId}`);
 
         } catch (error) {
-            console.error('❌ Error removing vote:', error);
+            console.error('❌ Error removing potato:', error);
             throw error;
         }
     }
@@ -617,8 +586,7 @@ class QuoteApp {
             await quotesCollection.add({
                 text: text,
                 author: this.userData.username,
-                likes: 0,
-                dislikes: 0,
+                potatoes: 0,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 createdBy: this.user.uid,
                 custom: true
