@@ -7,10 +7,53 @@ class QuoteApp {
     }
 
     initializeApp() {
+        // Check if Firebase is properly initialized
+        if (typeof auth === 'undefined') {
+            console.error('Firebase auth is not defined. Check your firebase.js file.');
+            this.showError('Errore di configurazione. Ricarica la pagina.');
+            return;
+        }
+
+        if (typeof quotesCollection === 'undefined') {
+            console.error('Firestore is not defined. Check your firebase.js file.');
+            this.showError('Errore di database. Ricarica la pagina.');
+            return;
+        }
+
         this.bindEvents();
         this.setupAuthListener();
         this.checkNotificationPermission();
         this.loadRandomQuote();
+    }
+
+    showError(message) {
+        // Create error message display
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FF4444;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 3px solid #8B0000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 10000;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+            text-align: center;
+        `;
+        errorDiv.textContent = message;
+        document.body.appendChild(errorDiv);
+
+        // Remove after 5 seconds
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.parentNode.removeChild(errorDiv);
+            }
+        }, 5000);
     }
 
     setupAuthListener() {
@@ -46,6 +89,7 @@ class QuoteApp {
             console.log('Loaded user ratings:', this.userRatings);
         } catch (error) {
             console.error('Error loading user ratings:', error);
+            this.showError('Errore nel caricamento dei voti');
         }
     }
 
@@ -89,6 +133,8 @@ class QuoteApp {
     }
 
     bindEvents() {
+        console.log('Binding events...');
+
         // Auth events
         document.getElementById('show-login-btn').addEventListener('click', () => this.showLoginModal());
         document.getElementById('login-btn').addEventListener('click', () => this.login());
@@ -113,6 +159,8 @@ class QuoteApp {
                 this.hideAddQuoteModal();
             }
         });
+
+        console.log('All events bound successfully');
     }
 
     showLoginModal() {
@@ -124,14 +172,22 @@ class QuoteApp {
         document.getElementById('login-modal').style.display = 'none';
         document.getElementById('login-email').value = '';
         document.getElementById('login-password').value = '';
-        document.getElementById('login-message').textContent = '';
-        document.getElementById('login-message').className = 'login-message';
+        const messageEl = document.getElementById('login-message');
+        if (messageEl) {
+            messageEl.textContent = '';
+            messageEl.className = 'login-message';
+        }
     }
 
     async login() {
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         const messageEl = document.getElementById('login-message');
+
+        if (!messageEl) {
+            console.error('Login message element not found');
+            return;
+        }
 
         messageEl.textContent = '';
         messageEl.className = 'login-message';
@@ -143,6 +199,7 @@ class QuoteApp {
 
         try {
             this.setLoginButtonsState(true);
+            console.log('Attempting login with:', email);
             await auth.signInWithEmailAndPassword(email, password);
             this.showLoginMessage('Benvenuto in Squotato! 🥔', 'success');
         } catch (error) {
@@ -157,6 +214,11 @@ class QuoteApp {
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         const messageEl = document.getElementById('login-message');
+
+        if (!messageEl) {
+            console.error('Login message element not found');
+            return;
+        }
 
         messageEl.textContent = '';
         messageEl.className = 'login-message';
@@ -173,6 +235,7 @@ class QuoteApp {
 
         try {
             this.setLoginButtonsState(true);
+            console.log('Attempting signup with:', email);
             await auth.createUserWithEmailAndPassword(email, password);
             this.showLoginMessage('Sei ora un vero Squotater! 🎉', 'success');
         } catch (error) {
@@ -221,6 +284,8 @@ class QuoteApp {
                 return 'Email già registrata!';
             case 'auth/weak-password':
                 return 'Password troppo debole!';
+            case 'auth/network-request-failed':
+                return 'Errore di connessione! Controlla internet.';
             default:
                 return 'Errore: ' + error.message;
         }
@@ -228,39 +293,56 @@ class QuoteApp {
 
     async logout() {
         try {
+            console.log('Logging out...');
             await auth.signOut();
         } catch (error) {
             console.error('Error logging out:', error);
+            this.showError('Errore durante il logout');
         }
     }
 
     async loadRandomQuote() {
+        console.log('Loading random quote from Firestore...');
+        
         try {
+            // Get all quotes from Firestore
             const snapshot = await quotesCollection.get();
+            console.log('Firestore snapshot:', snapshot);
+            
             const quotes = [];
             
             snapshot.forEach(doc => {
                 const data = doc.data();
+                console.log('Quote data:', data);
+                
                 const likes = data.likes || 0;
                 const dislikes = data.dislikes || 0;
                 
-                let weight = 10;
+                // Improved probability calculation
+                let weight = 10; // Base weight for all quotes
                 weight += Math.max(0, likes * 2);
                 weight -= Math.max(0, dislikes * 1);
                 weight = Math.max(1, weight);
                 
                 quotes.push({
                     id: doc.id,
-                    ...data,
+                    text: data.text,
+                    author: data.author,
+                    likes: likes,
+                    dislikes: dislikes,
                     weight: weight
                 });
             });
 
+            console.log(`Found ${quotes.length} quotes in database`);
+
             if (quotes.length === 0) {
+                console.log('No quotes found in database, displaying default');
                 this.displayDefaultQuote();
                 return;
             }
 
+            // Weighted random selection
             const totalWeight = quotes.reduce((sum, quote) => sum + quote.weight, 0);
             let random = Math.random() * totalWeight;
             let selectedQuote = null;
@@ -274,32 +356,50 @@ class QuoteApp {
             }
 
             this.currentQuote = selectedQuote || quotes[0];
+            console.log('Selected quote:', this.currentQuote);
             this.displayQuote(this.currentQuote);
             this.updateVoteButtons();
 
         } catch (error) {
-            console.error('Error loading quote:', error);
+            console.error('Error loading quotes from Firestore:', error);
+            this.showError('Errore nel caricamento delle Squotes');
             this.displayDefaultQuote();
         }
     }
 
     displayQuote(quote) {
+        console.log('Displaying quote:', quote);
+        
         const quoteText = document.getElementById('quote-text');
         const quoteAuthor = document.getElementById('quote-author');
         const likesCount = document.getElementById('likes-count');
         const dislikesCount = document.getElementById('dislikes-count');
 
-        if (quoteText) quoteText.textContent = `"${quote.text}"`;
-        if (quoteAuthor) quoteAuthor.textContent = `— ${quote.author || 'Squotater Sconosciuto'}`;
-        if (likesCount) likesCount.textContent = `👍 ${quote.likes || 0}`;
-        if (dislikesCount) dislikesCount.textContent = `👎 ${quote.dislikes || 0}`;
+        if (quoteText) {
+            quoteText.textContent = `"${quote.text}"`;
+        } else {
+            console.error('quote-text element not found');
+        }
+
+        if (quoteAuthor) {
+            quoteAuthor.textContent = `— ${quote.author || 'Squotater Sconosciuto'}`;
+        }
+
+        if (likesCount) {
+            likesCount.textContent = `👍 ${quote.likes || 0}`;
+        }
+
+        if (dislikesCount) {
+            dislikesCount.textContent = `👎 ${quote.dislikes || 0}`;
+        }
     }
 
     displayDefaultQuote() {
+        console.log('Displaying default quote (no quotes in database)');
         const defaultQuotes = [
-            { text: "Sono una patata e sono orgogliosa di esserlo!", author: "Squotater Felice", likes: 0, dislikes: 0 },
-            { text: "Le patate fritte sono le mie cugine cool", author: "Squotater Normale", likes: 0, dislikes: 0 },
-            { text: "Se il mondo fosse fatto di patate, non ci sarebbero guerre... solo purè", author: "Squotater Filosofo", likes: 0, dislikes: 0 }
+            { text: "Benvenuto in Squotato! Le citazioni dal database non sono ancora caricate.", author: "Squotater Sistema", likes: 0, dislikes: 0 },
+            { text: "Le patate del database si stanno ancora sbucciando... Ricarica tra poco!", author: "Patata Tecnica", likes: 0, dislikes: 0 },
+            { text: "Ops! Nessuna Squote trovata. Qualcuno ha mangiato tutte le patate?", author: "Squotater Affamato", likes: 0, dislikes: 0 }
         ];
         const randomQuote = defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)];
         this.displayQuote(randomQuote);
@@ -350,6 +450,7 @@ class QuoteApp {
 
         } catch (error) {
             console.error('Error adding vote:', error);
+            this.showError('Errore nel votare la Squote');
         }
     }
 
@@ -368,15 +469,19 @@ class QuoteApp {
                 .where('rating', '==', rating)
                 .get();
 
-            ratingSnapshot.forEach(async (doc) => {
-                await doc.ref.delete();
+            const deletePromises = [];
+            ratingSnapshot.forEach(doc => {
+                deletePromises.push(doc.ref.delete());
             });
+            
+            await Promise.all(deletePromises);
 
             this.userRatings.delete(quoteId);
             console.log(`Removed ${rating} from quote ${quoteId}`);
 
         } catch (error) {
             console.error('Error removing vote:', error);
+            this.showError('Errore nel rimuovere il voto');
         }
     }
 
@@ -458,7 +563,13 @@ class QuoteApp {
     }
 }
 
-// Initialize the app
+// Add global error handler
+window.addEventListener('error', (event) => {
+    console.error('Global error:', event.error);
+});
+
+// Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing Squotato app...');
     new QuoteApp();
 });
