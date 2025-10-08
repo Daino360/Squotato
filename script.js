@@ -373,4 +373,92 @@ class QuoteApp {
             });
 
             this.userRatings.delete(quoteId);
-            console.log
+            console.log(`Removed ${rating} from quote ${quoteId}`);
+
+        } catch (error) {
+            console.error('Error removing vote:', error);
+        }
+    }
+
+    showAddQuoteModal() {
+        if (!this.user) {
+            this.showLoginModal();
+            return;
+        }
+        document.getElementById('add-quote-modal').style.display = 'block';
+    }
+
+    hideAddQuoteModal() {
+        document.getElementById('add-quote-modal').style.display = 'none';
+        document.getElementById('new-quote-text').value = '';
+        document.getElementById('new-quote-author').value = '';
+    }
+
+    async submitCustomQuote() {
+        if (!this.user) {
+            this.showLoginModal();
+            return;
+        }
+
+        const text = document.getElementById('new-quote-text').value.trim();
+        const author = document.getElementById('new-quote-author').value.trim();
+
+        if (!text) {
+            alert('Per favore inserisci una Squote!');
+            return;
+        }
+
+        try {
+            await quotesCollection.add({
+                text: text,
+                author: author || 'Squotater Anonimo',
+                likes: 0,
+                dislikes: 0,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdBy: this.user.uid,
+                custom: true
+            });
+
+            this.hideAddQuoteModal();
+            alert('Squote aggiunta con successo! 🎉');
+            this.loadRandomQuote();
+
+        } catch (error) {
+            console.error('Error adding quote:', error);
+            alert('Errore nell\'aggiungere la Squote. Riprova.');
+        }
+    }
+
+    async requestNotificationPermission() {
+        try {
+            const permission = await Notification.requestPermission();
+            
+            if (permission === 'granted') {
+                const notificationBtn = document.getElementById('enable-notifications');
+                if (notificationBtn) {
+                    notificationBtn.textContent = '🔔 Notifiche Attivate!';
+                    notificationBtn.disabled = true;
+                }
+            } else {
+                alert('Notifiche bloccate. Puoi abilitarle nelle impostazioni del browser.');
+            }
+        } catch (error) {
+            console.error('Error requesting notification permission:', error);
+        }
+    }
+
+    checkNotificationPermission() {
+        if (Notification.permission === 'granted') {
+            const notificationBtn = document.getElementById('enable-notifications');
+            if (notificationBtn) {
+                notificationBtn.textContent = '🔔 Notifiche Attivate!';
+                notificationBtn.disabled = true;
+            }
+        }
+    }
+}
+
+// Initialize the app
+document.addEventListener('DOMContentLoaded', () => {
+    new QuoteApp();
+});
