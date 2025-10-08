@@ -17,6 +17,8 @@
     --red: #D32F2F;
     --dark-red: #C62828;
     --blue: #1976D2;
+    --potato-yellow: #FFD54F;
+    --dark-potato-yellow: #FBC02D;
 }
 
 body {
@@ -157,11 +159,7 @@ main {
     border-top-color: var(--cream);
 }
 
-.quote-image {
-    font-size: 4rem;
-    margin-bottom: 2rem;
-    opacity: 0.8;
-}
+/* REMOVED: .quote-image styles since we removed the potato emoticon */
 
 #quote-text {
     font-family: 'Merriweather', serif;
@@ -288,20 +286,23 @@ main {
 }
 
 .vote-btn {
-    min-width: 200px;
-    font-size: 1.2rem;
-    padding: 15px 30px;
+    min-width: 280px; /* Wider for the potato button */
+    font-size: 1.3rem; /* Slightly larger text */
+    padding: 18px 35px;
     position: relative;
 }
 
-.like-btn {
-    background: var(--green);
-    color: var(--white);
+/* CHANGED: Potato button styles instead of like/dislike */
+.potato-btn {
+    background: var(--potato-yellow);
+    color: var(--dark-brown);
+    border: 2px solid var(--dark-potato-yellow);
 }
 
-.dislike-btn {
-    background: var(--red);
-    color: var(--white);
+.potato-btn:hover:not(:disabled) {
+    background: var(--dark-potato-yellow);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .action-btn {
@@ -333,13 +334,12 @@ main {
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
-.like-btn.active {
-    background: var(--dark-green);
+.potato-btn.active {
+    background: var(--dark-potato-yellow);
+    border-color: var(--dark-brown);
 }
 
-.dislike-btn.active {
-    background: var(--dark-red);
-}
+/* REMOVED: like-btn.active and dislike-btn.active styles */
 
 /* Button Text States */
 .btn-text, .btn-active-text {
@@ -580,9 +580,7 @@ footer {
         font-size: 1.5rem;
     }
     
-    .quote-image {
-        font-size: 3rem;
-    }
+    /* REMOVED: .quote-image responsive styles */
     
     .stats {
         flex-direction: column;
@@ -593,5 +591,11 @@ footer {
         flex-direction: column;
         gap: 1rem;
         text-align: center;
+    }
+    
+    .vote-btn {
+        min-width: 250px; /* Adjusted for mobile */
+        font-size: 1.1rem;
+        padding: 15px 25px;
     }
 }
