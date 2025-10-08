@@ -5,25 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Squotato - Citazioni da Patata</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="potato-background">
+    <div class="app-background">
         <div class="container">
             <!-- Header -->
             <header>
                 <div class="header-content">
                     <div class="title-section">
-                        <h1>🥔 SQUOTATO 🥔</h1>
-                        <p class="subtitle">Le citazioni più patatose dell'universo!</p>
+                        <h1>SQUOTATO</h1>
+                        <p class="subtitle">Le citazioni più patatose dell'universo</p>
                     </div>
                     <div class="auth-section">
                         <div id="auth-buttons" class="auth-buttons">
-                            <button id="show-login-btn" class="btn auth-btn">💫 Diventa Squotater</button>
+                            <button id="show-login-btn" class="btn auth-btn">Diventa Squotater</button>
                         </div>
                         <div id="user-info" class="user-info" style="display: none;">
                             <span id="user-username" class="user-username"></span>
-                            <button id="logout-btn" class="btn logout-btn">🚪 Esci</button>
+                            <button id="logout-btn" class="btn logout-btn">Esci</button>
                         </div>
                     </div>
                 </div>
@@ -35,9 +35,8 @@
                     <!-- Quote Display -->
                     <div class="quote-display">
                         <div class="speech-bubble">
-                            <div class="quote-image" id="quote-image">🥔</div>
+                            <div class="quote-image">🥔</div>
                             <p id="quote-text">"Clicca il bottone per una Squote patatosa..."</p>
-                            <div class="bubble-tail"></div>
                         </div>
                     </div>
 
@@ -52,33 +51,24 @@
 
                     <!-- Guest Layout -->
                     <div id="guest-layout" class="layout-section">
-                        <div class="guest-message">
-                            <p>🎯 <strong>Vuoi essere un vero Squotater?</strong></p>
-                            <p>Vota e aggiungi le tue Squotes patatose!</p>
-                        </div>
                         <div class="guest-actions">
-                            <button id="guest-new-quote" class="btn giant-btn">🎲 VOGLIO UNA SQUOTE!</button>
+                            <button id="guest-new-quote" class="btn giant-btn">VOGLIO UNA SQUOTE!</button>
                         </div>
                     </div>
 
                     <!-- User Layout -->
                     <div id="user-layout" class="layout-section" style="display: none;">
-                        <div class="user-welcome">
-                            <p class="welcome-message">Ciao <span id="welcome-username"></span>! 👋</p>
-                        </div>
                         <div class="vote-section">
-                            <p class="section-title">Questa Squote ti piace?</p>
                             <div class="vote-buttons">
-                                <button id="like-btn" class="btn vote-btn like-btn">👍 MI PIACE!</button>
-                                <button id="dislike-btn" class="btn vote-btn dislike-btn">👎 BOOOOH!</button>
+                                <button id="like-btn" class="btn vote-btn like-btn">👍 MI PIACE</button>
+                                <button id="dislike-btn" class="btn vote-btn dislike-btn">👎 NON MI PIACE</button>
                             </div>
                         </div>
                         
                         <div class="action-section">
-                            <p class="section-title">Cosa vuoi fare?</p>
                             <div class="action-buttons">
-                                <button id="new-quote" class="btn action-btn primary">🔄 Nuova Squote</button>
-                                <button id="add-quote" class="btn action-btn secondary">✨ Crea Squote</button>
+                                <button id="new-quote" class="btn action-btn primary">NUOVA SQUOTE</button>
+                                <button id="add-quote" class="btn action-btn secondary">CREA SQUOTE</button>
                             </div>
                         </div>
                     </div>
@@ -88,7 +78,6 @@
             <!-- Footer -->
             <footer>
                 <div class="footer-content">
-                    <p>Le Squotes più squotate del pianeta Terra! 🌍🥔</p>
                     <button id="enable-notifications" class="btn notification-btn">📩 Ricevi la tua Squote ogni mattina!</button>
                 </div>
             </footer>
@@ -97,22 +86,21 @@
 
     <!-- Login/Register Modal -->
     <div id="auth-modal" class="modal">
-        <div class="modal-content cartoon-modal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h3>🎉 Entra in Squotato! 🎉</h3>
+                <h3>Entra in Squotato</h3>
                 <button class="close-modal" id="close-auth">✖</button>
             </div>
             <div class="modal-body">
-                <div class="modal-illustration">🥔💫</div>
-                <p class="modal-subtitle">Unisciti alla gang delle patate più cool!</p>
+                <div class="modal-illustration">🥔</div>
                 
-                <input type="text" id="auth-username" placeholder="👤 Il tuo username super figo" class="cartoon-input">
-                <input type="email" id="auth-email" placeholder="📧 La tua email" class="cartoon-input">
-                <input type="password" id="auth-password" placeholder="🔒 La tua password super-segreta" class="cartoon-input">
+                <input type="text" id="auth-username" placeholder="Il tuo username" class="modal-input">
+                <input type="email" id="auth-email" placeholder="La tua email" class="modal-input">
+                <input type="password" id="auth-password" placeholder="La tua password" class="modal-input">
                 
                 <div class="modal-actions">
-                    <button id="register-btn" class="btn modal-btn primary">🌟 Registrati come Squotater</button>
-                    <button id="login-btn" class="btn modal-btn secondary">🎪 Accedi al tuo account</button>
+                    <button id="register-btn" class="btn modal-btn primary">Registrati come Squotater</button>
+                    <button id="login-btn" class="btn modal-btn secondary">Accedi al tuo account</button>
                 </div>
                 
                 <div id="auth-message" class="auth-message"></div>
@@ -122,23 +110,22 @@
 
     <!-- Add Quote Modal -->
     <div id="add-quote-modal" class="modal">
-        <div class="modal-content cartoon-modal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h3>✨ Crea la tua Squote! ✨</h3>
+                <h3>Crea la tua Squote</h3>
                 <button class="close-modal" id="cancel-quote">✖</button>
             </div>
             <div class="modal-body">
-                <div class="modal-illustration">✍️🎨</div>
+                <div class="modal-illustration">✍️</div>
                 
-                <textarea id="new-quote-text" placeholder="Scrivi qui la tua citazione geniale... 
-Esempio: 'Le patate non hanno ossa, ma hanno molto carattere!'" class="cartoon-textarea"></textarea>
+                <textarea id="new-quote-text" placeholder="Scrivi qui la tua citazione geniale..." class="modal-textarea"></textarea>
                 
                 <div class="author-info">
                     <p>Autore: <span id="quote-author-name"></span></p>
                 </div>
                 
                 <div class="modal-actions">
-                    <button id="submit-quote" class="btn modal-btn primary">🚀 PUBBLICA SQUOTE!</button>
+                    <button id="submit-quote" class="btn modal-btn primary">PUBBLICA SQUOTE</button>
                 </div>
             </div>
         </div>
