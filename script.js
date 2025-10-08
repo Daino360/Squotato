@@ -7,27 +7,22 @@ class QuoteApp {
     }
 
     initializeApp() {
-        // Check if Firebase is properly initialized
-        if (typeof auth === 'undefined') {
-            console.error('Firebase auth is not defined. Check your firebase.js file.');
-            this.showError('Errore di configurazione. Ricarica la pagina.');
-            return;
-        }
-
-        if (typeof quotesCollection === 'undefined') {
-            console.error('Firestore is not defined. Check your firebase.js file.');
-            this.showError('Errore di database. Ricarica la pagina.');
+        console.log('🚀 Starting Squotato app...');
+        
+        // Check if Firebase is loaded
+        if (typeof firebase === 'undefined') {
+            this.showError('Firebase non caricato. Ricarica la pagina.');
             return;
         }
 
         this.bindEvents();
         this.setupAuthListener();
-        this.checkNotificationPermission();
         this.loadRandomQuote();
+        
+        console.log('✅ App initialized successfully');
     }
 
     showError(message) {
-        // Create error message display
         const errorDiv = document.createElement('div');
         errorDiv.style.cssText = `
             position: fixed;
@@ -44,11 +39,11 @@ class QuoteApp {
             font-family: 'Comic Neue', cursive;
             font-weight: bold;
             text-align: center;
+            max-width: 90%;
         `;
         errorDiv.textContent = message;
         document.body.appendChild(errorDiv);
 
-        // Remove after 5 seconds
         setTimeout(() => {
             if (errorDiv.parentNode) {
                 errorDiv.parentNode.removeChild(errorDiv);
@@ -58,7 +53,7 @@ class QuoteApp {
 
     setupAuthListener() {
         auth.onAuthStateChanged(async (user) => {
-            console.log('Auth state changed:', user);
+            console.log('👤 Auth state changed:', user);
             this.user = user;
             
             if (user) {
@@ -86,10 +81,9 @@ class QuoteApp {
                 this.userRatings.set(data.quoteId, data.rating);
             });
             
-            console.log('Loaded user ratings:', this.userRatings);
+            console.log('📊 Loaded user ratings:', this.userRatings.size);
         } catch (error) {
             console.error('Error loading user ratings:', error);
-            this.showError('Errore nel caricamento dei voti');
         }
     }
 
@@ -120,11 +114,9 @@ class QuoteApp {
         const dislikeBtn = document.getElementById('dislike-btn');
         const userRating = this.userRatings.get(this.currentQuote.id);
         
-        // Reset buttons
         likeBtn.classList.remove('active');
         dislikeBtn.classList.remove('active');
         
-        // Set active state
         if (userRating === 'like') {
             likeBtn.classList.add('active');
         } else if (userRating === 'dislike') {
@@ -133,7 +125,7 @@ class QuoteApp {
     }
 
     bindEvents() {
-        console.log('Binding events...');
+        console.log('🔗 Binding events...');
 
         // Auth events
         document.getElementById('show-login-btn').addEventListener('click', () => this.showLoginModal());
@@ -160,7 +152,7 @@ class QuoteApp {
             }
         });
 
-        console.log('All events bound successfully');
+        console.log('✅ All events bound successfully');
     }
 
     showLoginModal() {
@@ -185,7 +177,7 @@ class QuoteApp {
         const messageEl = document.getElementById('login-message');
 
         if (!messageEl) {
-            console.error('Login message element not found');
+            this.showError('Errore interno. Ricarica la pagina.');
             return;
         }
 
@@ -199,7 +191,6 @@ class QuoteApp {
 
         try {
             this.setLoginButtonsState(true);
-            console.log('Attempting login with:', email);
             await auth.signInWithEmailAndPassword(email, password);
             this.showLoginMessage('Benvenuto in Squotato! 🥔', 'success');
         } catch (error) {
@@ -216,7 +207,7 @@ class QuoteApp {
         const messageEl = document.getElementById('login-message');
 
         if (!messageEl) {
-            console.error('Login message element not found');
+            this.showError('Errore interno. Ricarica la pagina.');
             return;
         }
 
@@ -235,7 +226,6 @@ class QuoteApp {
 
         try {
             this.setLoginButtonsState(true);
-            console.log('Attempting signup with:', email);
             await auth.createUserWithEmailAndPassword(email, password);
             this.showLoginMessage('Sei ora un vero Squotater! 🎉', 'success');
         } catch (error) {
@@ -277,15 +267,13 @@ class QuoteApp {
             case 'auth/invalid-email':
                 return 'Email non valida!';
             case 'auth/user-not-found':
-                return 'Squotater non trovato!';
+                return 'Utente non trovato!';
             case 'auth/wrong-password':
                 return 'Password errata!';
             case 'auth/email-already-in-use':
                 return 'Email già registrata!';
             case 'auth/weak-password':
                 return 'Password troppo debole!';
-            case 'auth/network-request-failed':
-                return 'Errore di connessione! Controlla internet.';
             default:
                 return 'Errore: ' + error.message;
         }
@@ -293,33 +281,25 @@ class QuoteApp {
 
     async logout() {
         try {
-            console.log('Logging out...');
             await auth.signOut();
         } catch (error) {
             console.error('Error logging out:', error);
-            this.showError('Errore durante il logout');
         }
     }
 
     async loadRandomQuote() {
-        console.log('Loading random quote from Firestore...');
+        console.log('📖 Loading random quote...');
         
         try {
-            // Get all quotes from Firestore
             const snapshot = await quotesCollection.get();
-            console.log('Firestore snapshot:', snapshot);
-            
             const quotes = [];
             
             snapshot.forEach(doc => {
                 const data = doc.data();
-                console.log('Quote data:', data);
-                
                 const likes = data.likes || 0;
                 const dislikes = data.dislikes || 0;
                 
-                // Improved probability calculation
-                let weight = 10; // Base weight for all quotes
+                let weight = 10;
                 weight += Math.max(0, likes * 2);
                 weight -= Math.max(0, dislikes * 1);
                 weight = Math.max(1, weight);
@@ -334,15 +314,13 @@ class QuoteApp {
                 });
             });
 
-            console.log(`Found ${quotes.length} quotes in database`);
+            console.log(`📚 Found ${quotes.length} quotes in database`);
 
             if (quotes.length === 0) {
-                console.log('No quotes found in database, displaying default');
                 this.displayDefaultQuote();
                 return;
             }
 
-            // Weighted random selection
             const totalWeight = quotes.reduce((sum, quote) => sum + quote.weight, 0);
             let random = Math.random() * totalWeight;
             let selectedQuote = null;
@@ -356,50 +334,32 @@ class QuoteApp {
             }
 
             this.currentQuote = selectedQuote || quotes[0];
-            console.log('Selected quote:', this.currentQuote);
             this.displayQuote(this.currentQuote);
             this.updateVoteButtons();
 
         } catch (error) {
-            console.error('Error loading quotes from Firestore:', error);
-            this.showError('Errore nel caricamento delle Squotes');
+            console.error('Error loading quotes:', error);
             this.displayDefaultQuote();
         }
     }
 
     displayQuote(quote) {
-        console.log('Displaying quote:', quote);
-        
         const quoteText = document.getElementById('quote-text');
         const quoteAuthor = document.getElementById('quote-author');
         const likesCount = document.getElementById('likes-count');
         const dislikesCount = document.getElementById('dislikes-count');
 
-        if (quoteText) {
-            quoteText.textContent = `"${quote.text}"`;
-        } else {
-            console.error('quote-text element not found');
-        }
-
-        if (quoteAuthor) {
-            quoteAuthor.textContent = `— ${quote.author || 'Squotater Sconosciuto'}`;
-        }
-
-        if (likesCount) {
-            likesCount.textContent = `👍 ${quote.likes || 0}`;
-        }
-
-        if (dislikesCount) {
-            dislikesCount.textContent = `👎 ${quote.dislikes || 0}`;
-        }
+        if (quoteText) quoteText.textContent = `"${quote.text}"`;
+        if (quoteAuthor) quoteAuthor.textContent = `— ${quote.author || 'Squotater Sconosciuto'}`;
+        if (likesCount) likesCount.textContent = `👍 ${quote.likes || 0}`;
+        if (dislikesCount) dislikesCount.textContent = `👎 ${quote.dislikes || 0}`;
     }
 
     displayDefaultQuote() {
-        console.log('Displaying default quote (no quotes in database)');
         const defaultQuotes = [
-            { text: "Benvenuto in Squotato! Le citazioni dal database non sono ancora caricate.", author: "Squotater Sistema", likes: 0, dislikes: 0 },
-            { text: "Le patate del database si stanno ancora sbucciando... Ricarica tra poco!", author: "Patata Tecnica", likes: 0, dislikes: 0 },
-            { text: "Ops! Nessuna Squote trovata. Qualcuno ha mangiato tutte le patate?", author: "Squotater Affamato", likes: 0, dislikes: 0 }
+            { text: "Benvenuto in Squotato! Aggiungi la tua prima Squote!", author: "Squotater Sistema", likes: 0, dislikes: 0 },
+            { text: "Le patate del database si stanno ancora sbucciando...", author: "Patata Tecnica", likes: 0, dislikes: 0 },
+            { text: "Ops! Nessuna Squote trovata. Crea la prima!", author: "Squotater Affamato", likes: 0, dislikes: 0 }
         ];
         const randomQuote = defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)];
         this.displayQuote(randomQuote);
@@ -414,18 +374,15 @@ class QuoteApp {
         const quoteId = this.currentQuote.id;
         const currentRating = this.userRatings.get(quoteId);
         
-        // If clicking the same rating, remove it
         if (currentRating === rating) {
             await this.removeVote(quoteId, rating);
         } else {
-            // If switching from one rating to another, update it
             if (currentRating) {
                 await this.removeVote(quoteId, currentRating);
             }
             await this.addVote(quoteId, rating);
         }
         
-        // Reload the quote to get updated counts
         this.loadRandomQuote();
     }
 
@@ -446,11 +403,10 @@ class QuoteApp {
             });
 
             this.userRatings.set(quoteId, rating);
-            console.log(`Added ${rating} to quote ${quoteId}`);
 
         } catch (error) {
             console.error('Error adding vote:', error);
-            this.showError('Errore nel votare la Squote');
+            this.showError('Errore nel votare');
         }
     }
 
@@ -477,7 +433,6 @@ class QuoteApp {
             await Promise.all(deletePromises);
 
             this.userRatings.delete(quoteId);
-            console.log(`Removed ${rating} from quote ${quoteId}`);
 
         } catch (error) {
             console.error('Error removing vote:', error);
@@ -551,25 +506,10 @@ class QuoteApp {
             console.error('Error requesting notification permission:', error);
         }
     }
-
-    checkNotificationPermission() {
-        if (Notification.permission === 'granted') {
-            const notificationBtn = document.getElementById('enable-notifications');
-            if (notificationBtn) {
-                notificationBtn.textContent = '🔔 Notifiche Attivate!';
-                notificationBtn.disabled = true;
-            }
-        }
-    }
 }
 
-// Add global error handler
-window.addEventListener('error', (event) => {
-    console.error('Global error:', event.error);
-});
-
-// Initialize the app when DOM is loaded
+// Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing Squotato app...');
+    console.log('🥔 DOM loaded, starting Squotato...');
     new QuoteApp();
 });
