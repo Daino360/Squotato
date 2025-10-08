@@ -9,12 +9,44 @@ const firebaseConfig = {
   measurementId: "G-M2LL10X0M7"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+console.log('🚀 Initializing Firebase...');
+
+try {
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  console.log('✅ Firebase initialized successfully!');
+} catch (error) {
+  console.error('❌ Firebase initialization failed:', error);
+}
+
+// Initialize Firebase services
 const db = firebase.firestore();
-const messaging = firebase.messaging();
 const auth = firebase.auth();
 
 // Firebase collections
 const quotesCollection = db.collection('quotes');
 const feedbackCollection = db.collection('feedback');
+
+console.log('📚 Firestore collections initialized');
+
+// Test connections
+quotesCollection.get().then((snapshot) => {
+  console.log(`✅ Firestore connected! Found ${snapshot.size} quotes`);
+}).catch((error) => {
+  console.error('❌ Firestore connection failed:', error);
+});
+
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    console.log('🔐 User is logged in:', user.email);
+  } else {
+    console.log('🔐 No user logged in');
+  }
+});
+
+// Make variables globally available for debugging
+window.firebase = firebase;
+window.db = db;
+window.auth = auth;
+window.quotesCollection = quotesCollection;
+window.feedbackCollection = feedbackCollection;
