@@ -2,6 +2,7 @@ class QuoteApp {
     constructor() {
         this.currentQuote = null;
         this.user = null;
+        this.userRatings = new Map(); // Store user ratings for quotes
         this.initializeApp();
     }
 
@@ -9,19 +10,44 @@ class QuoteApp {
         this.bindEvents();
         this.setupAuthListener();
         this.checkNotificationPermission();
-        this.loadRandomQuote(); // Load quote immediately for guests
+        this.loadRandomQuote();
     }
 
     setupAuthListener() {
-        auth.onAuthStateChanged((user) => {
+        auth.onAuthStateChanged(async (user) => {
             console.log('Auth state changed:', user);
             this.user = user;
-            this.updateAuthUI();
             
             if (user) {
+                // Load user's ratings when they log in
+                await this.loadUserRatings();
                 this.hideLoginModal();
+            } else {
+                this.userRatings.clear();
             }
+            
+            this.updateAuthUI();
         });
+    }
+
+    async loadUserRatings() {
+        if (!this.user) return;
+        
+        try {
+            const snapshot = await feedbackCollection
+                .where('userId', '==', this.user.uid)
+                .get();
+            
+            this.userRatings.clear();
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                this.userRatings.set(data.quoteId, data.rating);
+            });
+            
+            console.log('Loaded user ratings:', this.userRatings);
+        } catch (error) {
+            console.error('Error loading user ratings:', error);
+        }
     }
 
     updateAuthUI() {
@@ -32,23 +58,45 @@ class QuoteApp {
         const guestActions = document.getElementById('guest-actions');
         const guestMessage = document.getElementById('guest-message');
 
-        console.log('Updating UI for user:', this.user);
-
         if (this.user) {
-            // User is logged in - show user actions
             authButtons.style.display = 'none';
             userInfo.style.display = 'flex';
             userEmail.textContent = this.user.email;
             userActions.style.display = 'block';
             guestActions.style.display = 'none';
             guestMessage.style.display = 'none';
+            
+            // Update button states based on current quote rating
+            this.updateVoteButtons();
         } else {
-            // User is logged out - show guest actions and message
             authButtons.style.display = 'flex';
             userInfo.style.display = 'none';
             userActions.style.display = 'none';
             guestActions.style.display = 'block';
             guestMessage.style.display = 'block';
+        }
+    }
+
+    updateVoteButtons() {
+        if (!this.currentQuote || !this.user) return;
+        
+        const likeBtn = document.getElementById('like-btn');
+        const dislikeBtn = document.getElementById('dislike-btn');
+        const userRating = this.userRatings.get(this.currentQuote.id);
+        
+        // Reset both buttons to default state
+        likeBtn.classList.remove('active');
+        dislikeBtn.classList.remove('active');
+        likeBtn.textContent = '👍 Mi Piace';
+        dislikeBtn.textContent = '👎 Non Mi Piace';
+        
+        // Set active state for current rating
+        if (userRating === 'like') {
+            likeBtn.classList.add('active');
+            likeBtn.textContent = '👍 Ti Piace!';
+        } else if (userRating === 'dislike') {
+            dislikeBtn.classList.add('active');
+            dislikeBtn.textContent = '👎 Non Ti Piace!';
         }
     }
 
@@ -62,11 +110,11 @@ class QuoteApp {
         document.getElementById('logout-btn').addEventListener('click', () => this.logout());
         document.getElementById('close-login').addEventListener('click', () => this.hideLoginModal());
 
-        // Quote events - BIND ALL BUTTONS
+        // Quote events
         document.getElementById('new-quote').addEventListener('click', () => this.loadRandomQuote());
         document.getElementById('guest-new-quote').addEventListener('click', () => this.loadRandomQuote());
-        document.getElementById('like-btn').addEventListener('click', () => this.rateQuote('like'));
-        document.getElementById('dislike-btn').addEventListener('click', () => this.rateQuote('dislike'));
+        document.getElementById('like-btn').addEventListener('click', () => this.toggleVote('like'));
+        document.getElementById('dislike-btn').addEventListener('click', () => this.toggleVote('dislike'));
         document.getElementById('add-quote').addEventListener('click', () => this.showAddQuoteModal());
         document.getElementById('submit-quote').addEventListener('click', () => this.submitCustomQuote());
         document.getElementById('cancel-quote').addEventListener('click', () => this.hideAddQuoteModal());
@@ -79,18 +127,14 @@ class QuoteApp {
                 this.hideAddQuoteModal();
             }
         });
-
-        console.log('All events bound successfully');
     }
 
     showLoginModal() {
-        console.log('Showing login modal');
         document.getElementById('login-modal').style.display = 'block';
         document.getElementById('login-email').focus();
     }
 
     hideLoginModal() {
-        console.log('Hiding login modal');
         document.getElementById('login-modal').style.display = 'none';
         document.getElementById('login-email').value = '';
         document.getElementById('login-password').value = '';
@@ -99,26 +143,22 @@ class QuoteApp {
     }
 
     async login() {
-        console.log('Login attempt');
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         const messageEl = document.getElementById('login-message');
 
-        // Clear previous messages
         messageEl.textContent = '';
         messageEl.className = 'login-message';
 
         if (!email || !password) {
-            this.showLoginMessage('Inserisci email e password patatose!', 'error');
+            this.showLoginMessage('Inserisci email e password!', 'error');
             return;
         }
 
         try {
             this.setLoginButtonsState(true);
-            console.log('Attempting Firebase login...');
             await auth.signInWithEmailAndPassword(email, password);
             this.showLoginMessage('Benvenuto in Squotato! 🥔', 'success');
-            // Modal will close automatically due to auth state change
         } catch (error) {
             console.error('Login error:', error);
             this.showLoginMessage(this.getAuthErrorMessage(error), 'error');
@@ -128,31 +168,27 @@ class QuoteApp {
     }
 
     async signup() {
-        console.log('Signup attempt');
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         const messageEl = document.getElementById('login-message');
 
-        // Clear previous messages
         messageEl.textContent = '';
         messageEl.className = 'login-message';
 
         if (!email || !password) {
-            this.showLoginMessage('Inserisci email e password patatose!', 'error');
+            this.showLoginMessage('Inserisci email e password!', 'error');
             return;
         }
 
         if (password.length < 6) {
-            this.showLoginMessage('La password deve essere di almeno 6 caratteri patatosi!', 'error');
+            this.showLoginMessage('La password deve essere di almeno 6 caratteri!', 'error');
             return;
         }
 
         try {
             this.setLoginButtonsState(true);
-            console.log('Attempting Firebase signup...');
             await auth.createUserWithEmailAndPassword(email, password);
-            this.showLoginMessage('Sei ufficialmente uno Squotater! 🎉🥔', 'success');
-            // Modal will close automatically due to auth state change
+            this.showLoginMessage('Registrazione completata! 🎉', 'success');
         } catch (error) {
             console.error('Signup error:', error);
             this.showLoginMessage(this.getAuthErrorMessage(error), 'error');
@@ -170,11 +206,11 @@ class QuoteApp {
             signupBtn.disabled = disabled;
             
             if (disabled) {
-                loginBtn.textContent = 'Sto entrando in Squotato...';
-                signupBtn.textContent = 'Sto diventando Squotater...';
+                loginBtn.textContent = 'Accesso...';
+                signupBtn.textContent = 'Registrazione...';
             } else {
                 loginBtn.textContent = 'Entra in Squotato';
-                signupBtn.textContent = 'Diventa un Squotater';
+                signupBtn.textContent = 'Registrati';
             }
         }
     }
@@ -190,29 +226,22 @@ class QuoteApp {
     getAuthErrorMessage(error) {
         switch (error.code) {
             case 'auth/invalid-email':
-                return 'Email non valida! Usa un\'email patatosa!';
-            case 'auth/user-disabled':
-                return 'Questo Squotater è stato disabilitato! 🥔💀';
+                return 'Email non valida!';
             case 'auth/user-not-found':
-                return 'Squotater non trovato! Devi diventare uno Squotater prima!';
+                return 'Utente non trovato!';
             case 'auth/wrong-password':
-                return 'Password sbagliata! Gli Squotater non approvano!';
+                return 'Password errata!';
             case 'auth/email-already-in-use':
-                return 'Questa email è già uno Squotater!';
+                return 'Email già registrata!';
             case 'auth/weak-password':
-                return 'Password troppo debole! Gli Squotater vogliono sicurezza!';
-            case 'auth/operation-not-allowed':
-                return 'Operazione non permessa! Gli Squotater si ribellano!';
-            case 'auth/too-many-requests':
-                return 'Troppi tentativi! Gli Squotater sono stanchi! Riprova più tardi.';
+                return 'Password troppo debole!';
             default:
-                return 'Errore patatoso: ' + error.message;
+                return 'Errore: ' + error.message;
         }
     }
 
     async logout() {
         try {
-            console.log('Logging out...');
             await auth.signOut();
         } catch (error) {
             console.error('Error logging out:', error);
@@ -220,7 +249,6 @@ class QuoteApp {
     }
 
     async loadRandomQuote() {
-        console.log('Loading random quote...');
         try {
             const snapshot = await quotesCollection.get();
             const quotes = [];
@@ -230,8 +258,7 @@ class QuoteApp {
                 const likes = data.likes || 0;
                 const dislikes = data.dislikes || 0;
                 
-                // Improved probability calculation
-                let weight = 10; // Base weight for all quotes
+                let weight = 10;
                 weight += Math.max(0, likes * 2);
                 weight -= Math.max(0, dislikes * 1);
                 weight = Math.max(1, weight);
@@ -243,15 +270,11 @@ class QuoteApp {
                 });
             });
 
-            console.log(`Found ${quotes.length} quotes`);
-
             if (quotes.length === 0) {
-                console.log('No quotes found, displaying default');
                 this.displayDefaultQuote();
                 return;
             }
 
-            // Weighted random selection
             const totalWeight = quotes.reduce((sum, quote) => sum + quote.weight, 0);
             let random = Math.random() * totalWeight;
             let selectedQuote = null;
@@ -265,8 +288,8 @@ class QuoteApp {
             }
 
             this.currentQuote = selectedQuote || quotes[0];
-            console.log('Selected quote:', this.currentQuote);
             this.displayQuote(this.currentQuote);
+            this.updateVoteButtons();
 
         } catch (error) {
             console.error('Error loading quote:', error);
@@ -275,7 +298,6 @@ class QuoteApp {
     }
 
     displayQuote(quote) {
-        console.log('Displaying quote:', quote);
         const quoteText = document.getElementById('quote-text');
         const quoteAuthor = document.getElementById('quote-author');
         const likesCount = document.getElementById('likes-count');
@@ -288,82 +310,105 @@ class QuoteApp {
     }
 
     displayDefaultQuote() {
-        console.log('Displaying default quote');
         const defaultQuotes = [
             { text: "Sono una patata e sono orgogliosa di esserlo!", author: "Squotater Felice", likes: 0, dislikes: 0 },
             { text: "Le patate fritte sono le mie cugine cool", author: "Squotater Normale", likes: 0, dislikes: 0 },
-            { text: "Se il mondo fosse fatto di patate, non ci sarebbero guerre... solo purè", author: "Squotater Filosofo", likes: 0, dislikes: 0 },
-            { text: "Clicca il bottone per una citazione patatosa...", author: "Squotater Starter", likes: 0, dislikes: 0 }
+            { text: "Se il mondo fosse fatto di patate, non ci sarebbero guerre... solo purè", author: "Squotater Filosofo", likes: 0, dislikes: 0 }
         ];
         const randomQuote = defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)];
         this.displayQuote(randomQuote);
     }
 
-    async rateQuote(rating) {
-        if (!this.currentQuote) {
-            console.log('No current quote to rate');
-            return;
-        }
-
-        if (!this.user) {
-            console.log('User not logged in, showing login modal');
+    async toggleVote(rating) {
+        if (!this.currentQuote || !this.user) {
             this.showLoginModal();
             return;
         }
 
-        console.log(`Rating quote with ${rating}`);
+        const quoteId = this.currentQuote.id;
+        const currentRating = this.userRatings.get(quoteId);
+        
+        // If clicking the same rating, remove it (toggle off)
+        if (currentRating === rating) {
+            await this.removeVote(quoteId, rating);
+        } else {
+            // If switching from one rating to another, update it
+            if (currentRating) {
+                await this.removeVote(quoteId, currentRating);
+            }
+            await this.addVote(quoteId, rating);
+        }
+        
+        // Reload the quote to get updated counts
+        this.loadRandomQuote();
+    }
 
+    async addVote(quoteId, rating) {
         try {
-            const quoteRef = quotesCollection.doc(this.currentQuote.id);
+            const quoteRef = quotesCollection.doc(quoteId);
             const field = rating === 'like' ? 'likes' : 'dislikes';
             
+            // Add the vote to the quote
             await quoteRef.update({
                 [field]: firebase.firestore.FieldValue.increment(1)
             });
 
-            if (this.user) {
-                await feedbackCollection.add({
-                    userId: this.user.uid,
-                    quoteId: this.currentQuote.id,
-                    rating: rating,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            }
+            // Store the user's rating
+            await feedbackCollection.add({
+                userId: this.user.uid,
+                quoteId: quoteId,
+                rating: rating,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
-            // Update current quote data and display
-            this.currentQuote[field] = (this.currentQuote[field] || 0) + 1;
-            this.displayQuote(this.currentQuote);
-
-            // Visual feedback
-            const button = document.getElementById(`${rating}-btn`);
-            if (button) {
-                const originalText = button.textContent;
-                button.textContent = rating === 'like' ? '👍 Squote Approvata!' : '👎 Squote Rifiutata!';
-                button.disabled = true;
-                
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.disabled = false;
-                }, 1000);
-            }
+            // Update local state
+            this.userRatings.set(quoteId, rating);
+            console.log(`Added ${rating} to quote ${quoteId}`);
 
         } catch (error) {
-            console.error('Error rating quote:', error);
+            console.error('Error adding vote:', error);
+        }
+    }
+
+    async removeVote(quoteId, rating) {
+        try {
+            const quoteRef = quotesCollection.doc(quoteId);
+            const field = rating === 'like' ? 'likes' : 'dislikes';
+            
+            // Remove the vote from the quote
+            await quoteRef.update({
+                [field]: firebase.firestore.FieldValue.increment(-1)
+            });
+
+            // Find and delete the user's rating document
+            const ratingSnapshot = await feedbackCollection
+                .where('userId', '==', this.user.uid)
+                .where('quoteId', '==', quoteId)
+                .where('rating', '==', rating)
+                .get();
+
+            ratingSnapshot.forEach(async (doc) => {
+                await doc.ref.delete();
+            });
+
+            // Update local state
+            this.userRatings.delete(quoteId);
+            console.log(`Removed ${rating} from quote ${quoteId}`);
+
+        } catch (error) {
+            console.error('Error removing vote:', error);
         }
     }
 
     showAddQuoteModal() {
         if (!this.user) {
-            console.log('User not logged in, showing login modal');
             this.showLoginModal();
             return;
         }
-        console.log('Showing add quote modal');
         document.getElementById('add-quote-modal').style.display = 'block';
     }
 
     hideAddQuoteModal() {
-        console.log('Hiding add quote modal');
         document.getElementById('add-quote-modal').style.display = 'none';
         document.getElementById('new-quote-text').value = '';
         document.getElementById('new-quote-author').value = '';
@@ -384,7 +429,6 @@ class QuoteApp {
         }
 
         try {
-            console.log('Submitting new quote:', text);
             await quotesCollection.add({
                 text: text,
                 author: author || 'Squotater Anonimo',
@@ -410,7 +454,6 @@ class QuoteApp {
             const permission = await Notification.requestPermission();
             
             if (permission === 'granted') {
-                console.log('Notification permission granted.');
                 const notificationBtn = document.getElementById('enable-notifications');
                 if (notificationBtn) {
                     notificationBtn.textContent = 'Notifiche Attivate ✓';
@@ -435,13 +478,22 @@ class QuoteApp {
     }
 }
 
+// Add CSS for active vote buttons
+const style = document.createElement('style');
+style.textContent = `
+    .btn.like.active {
+        background: #228B22 !important;
+        transform: scale(1.05);
+    }
+    
+    .btn.dislike.active {
+        background: #8B0000 !important;
+        transform: scale(1.05);
+    }
+`;
+document.head.appendChild(style);
+
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing app...');
     new QuoteApp();
-});
-
-// Add error handling for Firebase
-window.addEventListener('error', (event) => {
-    console.error('Global error:', event.error);
 });
