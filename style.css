@@ -5,29 +5,36 @@
 }
 
 :root {
-    --potato-brown: #8B4513;
-    --potato-yellow: #FFD700;
-    --potato-orange: #FF8C00;
-    --potato-green: #32CD32;
-    --potato-red: #FF4444;
-    --potato-blue: #4169E1;
-    --potato-light: #FFF8DC;
-    --potato-dark: #4B3621;
+    --yellow: #FFD93D;
+    --orange: #FF6B35;
+    --red: #FF4444;
+    --green: #6BCF7F;
+    --blue: #4D96FF;
+    --purple: #9D4EDD;
+    --brown: #8B4513;
+    --white: #FFFFFF;
+    --black: #2D3047;
 }
 
 body {
     font-family: 'Comic Neue', cursive;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 140, 0, 0.1) 0%, transparent 50%),
-        linear-gradient(135deg, #FFE4B5 0%, #FFF8DC 50%, #FFE4B5 100%);
-    color: var(--potato-dark);
+    background: linear-gradient(135deg, #FFEAA7 0%, #FFD93D 50%, #FF9F43 100%);
     min-height: 100vh;
-    line-height: 1.5;
+    color: var(--black);
+    line-height: 1.4;
+}
+
+.potato-background {
+    min-height: 100vh;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.3) 20px, transparent 40px),
+        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.3) 15px, transparent 30px),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 25px, transparent 50px);
+    background-size: 200px 200px;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
     min-height: 100vh;
@@ -44,13 +51,25 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 2rem;
-    background: white;
+    background: var(--white);
     padding: 1.5rem 2rem;
-    border-radius: 20px;
-    border: 4px solid var(--potato-brown);
-    box-shadow: 8px 8px 0px var(--potato-brown);
+    border-radius: 25px;
+    border: 4px solid var(--black);
+    box-shadow: 8px 8px 0px var(--black);
+    position: relative;
+    overflow: hidden;
+}
+
+.header-content::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(45deg, var(--yellow), var(--orange), var(--red));
+    z-index: -1;
+    border-radius: 30px;
 }
 
 .title-section {
@@ -58,100 +77,237 @@ header {
     text-align: center;
 }
 
-.auth-section {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 1rem;
-}
-
 h1 {
-    font-family: 'Comic Neue', cursive;
-    font-size: 3.5rem;
+    font-size: 3rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    color: var(--potato-brown);
-    text-shadow: 3px 3px 0px var(--potato-yellow);
+    background: linear-gradient(45deg, var(--orange), var(--red), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
     transform: rotate(-1deg);
 }
 
 .subtitle {
-    font-size: 1.3rem;
-    color: var(--potato-orange);
-    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--brown);
+    font-weight: bold;
     transform: rotate(0.5deg);
 }
 
-/* Auth Button Styles */
+/* Auth Section */
+.auth-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
 .auth-buttons {
     display: flex;
     gap: 1rem;
 }
 
-.btn.auth-btn {
-    background: var(--potato-orange);
-    color: white;
-    border: 3px solid var(--potato-brown);
-    padding: 12px 20px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border-radius: 25px;
-    box-shadow: 4px 4px 0px var(--potato-brown);
-    transition: all 0.2s ease;
-}
-
-.btn.logout-btn {
-    background: var(--potato-red);
-    color: white;
-    border: 3px solid #8B0000;
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    border-radius: 20px;
-    box-shadow: 3px 3px 0px #8B0000;
-}
-
 .user-info {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    background: var(--potato-green);
-    padding: 10px 20px;
-    border-radius: 25px;
-    border: 2px solid #228B22;
-    box-shadow: 3px 3px 0px #228B22;
+    gap: 0.8rem;
+    background: var(--green);
+    padding: 0.8rem 1.2rem;
+    border-radius: 20px;
+    border: 3px solid var(--black);
+    box-shadow: 3px 3px 0px var(--black);
+}
+
+.user-badge {
+    font-size: 1.2rem;
 }
 
 .user-email {
-    font-size: 1rem;
-    color: white;
+    font-size: 0.9rem;
+    color: var(--black);
     font-weight: bold;
 }
 
-/* Button Base Styles */
-.btn {
-    padding: 15px 25px;
-    border: none;
-    border-radius: 25px;
-    font-family: 'Comic Neue', cursive;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    min-width: 200px;
-    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.3);
+/* Main Content */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-card {
+    background: var(--white);
+    border-radius: 30px;
+    padding: 3rem;
+    border: 4px solid var(--black);
+    box-shadow: 10px 10px 0px var(--black);
+    position: relative;
+    overflow: hidden;
+}
+
+.main-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: linear-gradient(90deg, var(--yellow), var(--orange), var(--red), var(--purple), var(--blue));
+}
+
+/* Quote Display */
+.quote-display {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 2rem;
     position: relative;
 }
 
+.speech-bubble {
+    flex: 1;
+    background: var(--yellow);
+    padding: 2rem;
+    border-radius: 25px;
+    border: 3px solid var(--black);
+    box-shadow: 5px 5px 0px var(--black);
+    position: relative;
+}
+
+.speech-bubble::before {
+    content: "";
+    position: absolute;
+    bottom: -20px;
+    left: 50px;
+    border: 10px solid transparent;
+    border-top-color: var(--yellow);
+    border-right-color: var(--yellow);
+}
+
+#quote-text {
+    font-size: 1.8rem;
+    line-height: 1.4;
+    color: var(--black);
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+}
+
+.potato-character {
+    font-size: 4rem;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+/* Quote Info */
+.quote-info {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.author {
+    font-size: 1.4rem;
+    color: var(--brown);
+    font-weight: bold;
+    font-style: italic;
+    margin-bottom: 1rem;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.stat {
+    background: var(--white);
+    padding: 0.8rem 1.5rem;
+    border-radius: 20px;
+    border: 2px solid var(--black);
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 3px 3px 0px var(--black);
+}
+
+/* Layout Sections */
+.layout-section {
+    margin-top: 2rem;
+}
+
+.guest-message {
+    background: var(--blue);
+    color: var(--white);
+    padding: 1.5rem;
+    border-radius: 20px;
+    border: 3px solid var(--black);
+    box-shadow: 5px 5px 0px var(--black);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.guest-message p {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.section-title {
+    font-size: 1.3rem;
+    color: var(--brown);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+    transform: rotate(-0.5deg);
+}
+
+/* Vote Section */
+.vote-section {
+    margin-bottom: 2rem;
+}
+
+.vote-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+/* Action Section */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* Button Styles */
+.btn {
+    padding: 15px 25px;
+    border: 3px solid var(--black);
+    border-radius: 20px;
+    font-family: 'Comic Neue', cursive;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    box-shadow: 4px 4px 0px var(--black);
+    position: relative;
+    overflow: hidden;
+}
+
 .btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.3);
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px var(--black);
 }
 
 .btn:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0px var(--black);
 }
 
 .btn:disabled {
@@ -160,51 +316,104 @@ h1 {
     transform: none;
 }
 
-.btn.primary {
-    background: var(--potato-yellow);
-    color: var(--potato-dark);
-    border: 3px solid var(--potato-orange);
+/* Specific Button Types */
+.auth-btn {
+    background: var(--purple);
+    color: var(--white);
+    font-size: 1rem;
+    padding: 10px 20px;
 }
 
-.btn.secondary {
-    background: var(--potato-green);
-    color: white;
-    border: 3px solid #228B22;
+.logout-btn {
+    background: var(--red);
+    color: var(--white);
+    font-size: 0.9rem;
+    padding: 8px 16px;
 }
 
-.btn.like {
-    background: var(--potato-green);
-    color: white;
-    border: 3px solid #228B22;
-    font-size: 1.3rem;
-}
-
-.btn.dislike {
-    background: var(--potato-red);
-    color: white;
-    border: 3px solid #8B0000;
-    font-size: 1.3rem;
-}
-
-.btn.notification {
-    background: var(--potato-blue);
-    color: white;
-    border: 3px solid #000080;
-}
-
-.btn.guest-btn {
-    background: var(--potato-orange);
-    color: white;
-    border: 4px solid var(--potato-brown);
-    padding: 20px 40px;
+.giant-btn {
+    background: var(--orange);
+    color: var(--white);
     font-size: 1.5rem;
-    box-shadow: 6px 6px 0px var(--potato-brown);
-    animation: bounce 2s infinite;
+    padding: 20px 40px;
+    width: 100%;
+    animation: pulse 2s infinite;
 }
 
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.vote-btn {
+    min-width: 180px;
+    font-size: 1.2rem;
+    padding: 15px 25px;
+}
+
+.like-btn {
+    background: var(--green);
+    color: var(--white);
+}
+
+.dislike-btn {
+    background: var(--red);
+    color: var(--white);
+}
+
+.action-btn {
+    min-width: 200px;
+    font-size: 1.1rem;
+}
+
+.primary {
+    background: var(--yellow);
+    color: var(--black);
+}
+
+.secondary {
+    background: var(--blue);
+    color: var(--white);
+}
+
+.notification-btn {
+    background: var(--purple);
+    color: var(--white);
+}
+
+/* Active States */
+.vote-btn.active {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px currentColor;
+}
+
+.like-btn.active {
+    background: #2E8B57;
+}
+
+.dislike-btn.active {
+    background: #DC143C;
+}
+
+/* Footer */
+footer {
+    margin-top: 2rem;
+}
+
+.footer-content {
+    text-align: center;
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 20px;
+    border: 3px solid var(--black);
+    box-shadow: 5px 5px 0px var(--black);
+}
+
+.footer-content p {
+    font-size: 1.1rem;
+    color: var(--brown);
+    font-weight: bold;
+    margin-bottom: 1rem;
 }
 
 /* Modal Styles */
@@ -215,295 +424,147 @@ h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(139, 69, 19, 0.8);
+    background: rgba(0, 0, 0, 0.7);
     z-index: 1000;
+    backdrop-filter: blur(5px);
 }
 
-.modal-content {
+.cartoon-modal {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: var(--white);
     padding: 2rem;
-    border-radius: 20px;
+    border-radius: 25px;
+    border: 4px solid var(--black);
+    box-shadow: 15px 15px 0px var(--black);
     width: 90%;
     max-width: 500px;
-    border: 4px solid var(--potato-brown);
-    box-shadow: 10px 10px 0px var(--potato-brown);
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px dashed var(--black);
 }
 
 .modal-header h3 {
-    color: var(--potato-brown);
+    color: var(--black);
     font-size: 1.8rem;
     margin: 0;
+    text-align: center;
+    flex: 1;
 }
 
 .close-modal {
-    background: var(--potato-red);
-    color: white;
-    border: none;
+    background: var(--red);
+    color: var(--white);
+    border: 2px solid var(--black);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.5rem;
+    width: 35px;
+    height: 35px;
+    font-size: 1.2rem;
     font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 2px 2px 0px #8B0000;
+    box-shadow: 2px 2px 0px var(--black);
     transition: all 0.2s ease;
 }
 
 .close-modal:hover {
     transform: scale(1.1);
+    background: #DC143C;
+}
+
+.modal-body {
+    text-align: center;
+}
+
+.modal-illustration {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: wiggle 3s infinite;
+}
+
+@keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    75% { transform: rotate(-5deg); }
 }
 
 .modal-subtitle {
-    text-align: center;
-    color: var(--potato-orange);
+    color: var(--brown);
     margin-bottom: 1.5rem;
     font-size: 1.1rem;
+    font-weight: bold;
 }
 
-.login-input {
+.cartoon-input, .cartoon-textarea {
     width: 100%;
     padding: 15px;
     margin-bottom: 1rem;
-    border: 3px solid var(--potato-brown);
+    border: 3px solid var(--black);
     border-radius: 15px;
-    background: var(--potato-light);
-    color: var(--potato-dark);
+    background: var(--white);
+    color: var(--black);
     font-family: 'Comic Neue', cursive;
-    font-size: 1.1rem;
+    font-size: 1rem;
     transition: all 0.2s ease;
+    box-shadow: 3px 3px 0px var(--black);
 }
 
-.login-input:focus {
+.cartoon-input:focus, .cartoon-textarea:focus {
     outline: none;
-    border-color: var(--potato-orange);
-    background: white;
+    border-color: var(--orange);
+    box-shadow: 3px 3px 0px var(--orange);
     transform: scale(1.02);
 }
 
-.login-input::placeholder {
-    color: #999;
+.cartoon-textarea {
+    height: 120px;
+    resize: vertical;
 }
 
-.login-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    margin: 1.5rem 0;
-}
-
-.login-message {
-    margin: 1rem 0;
-    text-align: center;
-    color: var(--potato-dark);
-    min-height: 25px;
-    font-weight: bold;
-    padding: 10px;
-    border-radius: 10px;
-    background: var(--potato-light);
-    border: 2px solid var(--potato-brown);
-}
-
-.login-message.success {
-    color: #228B22;
-    background: #90EE90;
-    border-color: #228B22;
-}
-
-.login-message.error {
-    color: #8B0000;
-    background: #FFB6C1;
-    border-color: #8B0000;
-}
-
-/* Main App */
-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.quote-card {
-    background: white;
-    border-radius: 25px;
-    padding: 3rem;
-    margin-bottom: 2rem;
-    border: 4px solid var(--potato-yellow);
-    flex-grow: 1;
-    box-shadow: 10px 10px 0px var(--potato-brown);
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    position: relative;
-}
-
-.quote-card::before {
-    content: "🥔";
-    font-size: 4rem;
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    opacity: 0.3;
-    transform: rotate(-15deg);
-}
-
-.quote-card::after {
-    content: "🍟";
-    font-size: 4rem;
-    position: absolute;
-    bottom: -20px;
-    right: -20px;
-    opacity: 0.3;
-    transform: rotate(15deg);
-}
-
-.quote-content {
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-#quote-text {
-    font-size: 2rem;
-    line-height: 1.4;
-    margin-bottom: 1.5rem;
-    font-style: italic;
-    color: var(--potato-dark);
-    font-family: 'Patrick Hand', cursive;
-}
-
-.author {
-    text-align: center;
-    font-weight: bold;
-    color: var(--potato-orange);
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    font-style: italic;
-}
-
-.quote-stats {
-    display: flex;
-    justify-content: center;
-    gap: 3rem;
-    margin-top: 1.5rem;
-}
-
-.stat {
-    background: var(--potato-light);
-    padding: 0.8rem 1.5rem;
-    border-radius: 20px;
-    border: 2px solid var(--potato-brown);
-    color: var(--potato-dark);
-    font-weight: bold;
-    font-size: 1.1rem;
-    box-shadow: 3px 3px 0px var(--potato-brown);
-}
-
-/* Guest Actions */
-.guest-actions {
-    text-align: center;
-    margin: 2rem 0;
-}
-
-/* Guest Message */
-.guest-message {
-    background: var(--potato-light);
-    padding: 1.5rem;
-    border-radius: 15px;
-    border: 3px dashed var(--potato-orange);
-    text-align: center;
-    margin: 2rem 0;
-}
-
-.guest-message p {
-    font-size: 1.2rem;
-    color: var(--potato-dark);
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-}
-
-/* User Actions */
-.user-actions {
-    margin-top: 2rem;
-}
-
-.feedback-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-.actions {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    margin-top: 1rem;
+.cartoon-input::placeholder, .cartoon-textarea::placeholder {
+    color: #666;
 }
 
 .modal-actions {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
     margin-top: 1.5rem;
 }
 
-.modal-content textarea,
-.modal-content input {
+.modal-btn {
     width: 100%;
-    padding: 15px;
-    margin-bottom: 1rem;
-    border: 3px solid var(--potato-brown);
-    border-radius: 15px;
-    background: var(--potato-light);
-    color: var(--potato-dark);
-    font-family: 'Comic Neue', cursive;
-    font-size: 1.1rem;
-    transition: all 0.2s ease;
-}
-
-.modal-content textarea:focus,
-.modal-content input:focus {
-    outline: none;
-    border-color: var(--potato-orange);
-    background: white;
-    transform: scale(1.02);
-}
-
-.modal-content textarea {
-    height: 150px;
-    resize: vertical;
-}
-
-.modal-content textarea::placeholder,
-.modal-content input::placeholder {
-    color: #999;
-}
-
-footer {
-    text-align: center;
-    margin-top: auto;
-    padding: 2rem 0;
-}
-
-footer p {
-    margin-bottom: 1rem;
-    color: var(--potato-brown);
-    font-style: italic;
     font-size: 1.2rem;
+    padding: 15px;
+}
+
+.login-message {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 15px;
+    border: 2px solid var(--black);
+    font-weight: bold;
+    text-align: center;
+}
+
+.login-message.success {
+    background: var(--green);
+    color: var(--white);
+}
+
+.login-message.error {
+    background: var(--red);
+    color: var(--white);
 }
 
 /* Responsive Design */
@@ -514,88 +575,74 @@ footer p {
     
     .header-content {
         flex-direction: column;
-        align-items: center;
+        gap: 1rem;
         text-align: center;
     }
     
-    .auth-section {
-        align-items: center;
-    }
-    
     h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
     
-    .quote-card {
+    .main-card {
         padding: 2rem;
     }
     
-    #quote-text {
-        font-size: 1.6rem;
-    }
-    
-    .actions {
+    .quote-display {
         flex-direction: column;
         align-items: center;
-    }
-    
-    .feedback-buttons {
-        flex-direction: column;
-        align-items: center;
+        text-align: center;
         gap: 1rem;
+    }
+    
+    .speech-bubble::before {
+        display: none;
+    }
+    
+    #quote-text {
+        font-size: 1.4rem;
+    }
+    
+    .vote-buttons, .action-buttons {
+        flex-direction: column;
+        align-items: center;
     }
     
     .btn {
         width: 100%;
         max-width: 300px;
-        font-size: 1.1rem;
-        padding: 12px 20px;
     }
     
-    .login-actions {
-        flex-direction: column;
-    }
-    
-    .modal-content {
+    .cartoon-modal {
         padding: 1.5rem;
         width: 95%;
-    }
-    
-    .quote-stats {
-        flex-direction: column;
-        gap: 1rem;
     }
 }
 
 @media (max-width: 480px) {
     h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
     
-    .quote-card {
+    .main-card {
         padding: 1.5rem;
     }
     
     #quote-text {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
     
-    .stat {
-        padding: 0.6rem 1.2rem;
-        font-size: 1rem;
+    .potato-character {
+        font-size: 3rem;
+    }
+    
+    .stats {
+        flex-direction: column;
+        gap: 1rem;
     }
     
     .user-info {
         flex-direction: column;
         gap: 0.5rem;
-    }
-    
-    .btn {
-        min-width: auto;
-    }
-    
-    .btn.guest-btn {
-        font-size: 1.2rem;
-        padding: 15px 25px;
+        text-align: center;
     }
 }
